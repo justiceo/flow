@@ -1,0 +1,21 @@
+{
+  "name": "flow",
+  "version": "0.0.1",
+  "description": "An AI logger and more",
+  "main": "flow.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "type": "module",
+  "keywords": [
+    "ai",
+    "logging",
+    "observability",
+    "testing",
+    "evals",
+    "analytics",
+    "debugging"
+  ],
+  "author": "Justice Ogbonna",
+  "license": "ISC"
+}
