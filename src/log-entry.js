@@ -9,7 +9,7 @@ class Request {
   systemPrompt;
 
   /** @type {string} The ID of the model used */
-  modelId;
+  model;
 
   /** @type {string} The family of the model used */
   modelFamily;
@@ -60,6 +60,8 @@ class Response {
 
   /** @type {number} The timestamp when the response ended */
   endTime;
+
+  outputMode;
 }
 
 /**

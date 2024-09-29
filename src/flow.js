@@ -3,16 +3,9 @@
 import fs from "fs/promises";
 import path from "path";
 import os from "os";
+import { LogEntryType } from "./const.js";
 import { ChatGptLog } from "./chatgpt-log.js";
 
-const LogEntryType = Object.freeze({
-  PROMPT: "prompt",
-  REQUEST: "request",
-  RESPONSE: "response",
-  FUNCTION_CALL: "functionCall",
-  CUSTOM: "custom",
-  ERROR: "error",
-});
 
 class Flow {
   constructor() {
@@ -113,7 +106,12 @@ class Flow {
   }
 
   getModelFamily(buffer) {
-    entry = buffer.find((entry) => entry.type === LogEntryType.REQUEST);
+    const entry = buffer.find((e) => e.type === LogEntryType.REQUEST);
+    if(!entry) {
+      // The request was not made. 
+      // TODO: Determine the best way to handle this case.
+      return "chatgpt";
+    }
     if (entry.data?.model?.includes("gemini")) {
       return "gemini";
     } else if (entry.data?.model?.includes("claude")) {
@@ -124,12 +122,16 @@ class Flow {
   }
 
   async flushLogs() {
+    if(this.buffer.length === 0) {
+      return;
+    }
+
     const readonlyBuffer = Object.freeze([...this.buffer]);
 
     const logEntry = this.createLogEntry(readonlyBuffer);
 
     const logFileName = `${new Date().toISOString().split("T")[0]}.jsonl`;
-    const logFilePath = path.join(os.tmpdir(), logFileName);
+    const logFilePath = path.join( "./", logFileName);
 
     await fs.appendFile(logFilePath, JSON.stringify(logEntry) + "\n");
 
