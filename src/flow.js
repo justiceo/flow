@@ -136,6 +136,8 @@ class Flow {
     await fs.appendFile(logFilePath, JSON.stringify(logEntry) + "\n");
 
     this.buffer = [];
+
+    return logEntry;
   }
 }
 

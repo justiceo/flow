@@ -4,7 +4,7 @@
   "description": "An AI logger and more",
   "main": "flow.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jasmine"
   },
   "type": "module",
   "keywords": [
@@ -17,5 +17,8 @@
     "debugging"
   ],
   "author": "Justice Ogbonna",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "jasmine": "^5.3.0"
+  }
 }
