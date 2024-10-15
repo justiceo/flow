@@ -24,10 +24,29 @@ export class ChatGptLog {
     };
   }
   processResponse(buffer) {
-    return {};
+    const response = buffer.find((e) => e.type === LogEntryType.RESPONSE);
+
+    if (!response) {
+      return {};
+    }
+
+    return {
+      responseText: response?.data?.choices?.[0]?.message?.content,
+      finishReason: response?.data?.choices?.[0]?.finish_reason,
+      completionTime: response?.timestamp,
+      tokenCount: response?.data?.usage?.total_tokens,
+    };
   }
   processFunctionCalls(buffer) {
-    return [];
+    const functionCalls = buffer
+      .filter((e) => e.type === LogEntryType.FUNCTION_CALL)
+      .map((entry) => ({
+        functionName: entry?.data?.name,
+        arguments: entry?.data?.arguments,
+        callTime: entry?.timestamp,
+      }));
+
+    return functionCalls;
   }
   processMeta(buffer) {
     return {};
