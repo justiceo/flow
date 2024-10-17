@@ -4,7 +4,8 @@
   "description": "An AI logger and more",
   "main": "flow.js",
   "scripts": {
-    "test": "jasmine"
+    "test": "jasmine",
+    "start": "node --loader ts-node/esm --experimental-specifier-resolution=node src/index.ts"
   },
   "type": "module",
   "keywords": [
@@ -19,6 +20,13 @@
   "author": "Justice Ogbonna",
   "license": "ISC",
   "devDependencies": {
-    "jasmine": "^5.3.0"
+    "@types/node": "^22.7.5",
+    "jasmine": "^5.3.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "openai": "^4.67.3"
   }
 }
