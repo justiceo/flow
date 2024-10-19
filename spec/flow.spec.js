@@ -1,10 +1,10 @@
-import { flow } from "../src/flow.js";
+import { flow } from "../src/flow";
 
 describe("Flow", () => {
   it("should write basic logs", async () => {
-    flow.logPrompt("Hello, World!");
+    flow.logPrompt("Hello, World!", "user-input");
     flow.logRequest({
-      model: "gpt-3.5-turbo",
+      model: "gpt-4o",
       messages: [
         {
           role: "user",
