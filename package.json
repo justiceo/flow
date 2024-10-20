@@ -21,7 +21,6 @@
   "license": "ISC",
   "devDependencies": {
     "@types/geoip-lite": "^1.4.4",
-    "@types/jasmine": "^5.1.4",
     "@types/jest": "^29.5.13",
     "@types/node": "^22.7.5",
     "esm": "^3.2.25",
