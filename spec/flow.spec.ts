@@ -1,4 +1,4 @@
-import { flow } from "../flow";
+import { flow } from "../src/flow";
 
 describe("Flow", () => {
   it("should log prompts, requests, responses, function calls, and custom metadata", async () => {
@@ -7,7 +7,7 @@ describe("Flow", () => {
 
     // Log Request
     flow.logRequest({
-      model: "gpt-4o",
+      model: "gpt-4o-mini",
       messages: [
         {
           role: "user",
