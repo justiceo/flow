@@ -1,16 +1,16 @@
+
+
 {
-    "compilerOptions": {
-      "target": "ES2020",                       // or any other ES version like ES2017, ES2021
-      "module": "ESNext",                       // Use ES Modules (ESM)
-      "moduleResolution": "node",               // Required for using Node.js module resolution
-      "outDir": "./dist",                       // Output directory for compiled files
-      "rootDir": "./src",                       // Root directory of source files
-      "esModuleInterop": true,                  // Enables interoperability between CommonJS and ESM
-      "forceConsistentCasingInFileNames": true, // Ensures consistency in file name casing
-      "strict": true,                           // Enable all strict type-checking options
-      "skipLibCheck": true                      // Skips type checks for declaration files
-    },
-    "include": ["src/**/*"],                    // Include all source files in 'src' directory
-    "exclude": ["node_modules", "dist"]         // Exclude node_modules and dist directories
-  }
-  
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "./dist"
+  },
+  "include": ["src/**/*", "spec/**/*"],
+  "exclude": ["node_modules"]
+}

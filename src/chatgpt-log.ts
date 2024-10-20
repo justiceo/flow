@@ -57,10 +57,6 @@ export class ChatGptLog {
   processResponse(buffer: Readonly<LogEntry[]>): ResponseData | {} {
     const response = buffer.find((e) => e.type === LogEntryType.RESPONSE);
 
-    if (!response) {
-      return {};
-    }
-
     return {
       responseText: response?.data?.choices?.[0]?.message?.content,
       finishReason: response?.data?.choices?.[0]?.finish_reason,
@@ -81,7 +77,18 @@ export class ChatGptLog {
     return functionCalls;
   }
 
-  processMeta(buffer: Readonly<LogEntry[]>): {} {
-    return {};
+
+  processMeta(buffer: Readonly<LogEntry[]>) {
+    const metaDetails = buffer.find((entry) => entry.type === LogEntryType.CUSTOM);    
+    return {
+      output_mode: metaDetails?.data?.data?.output_mode,
+      user_id: metaDetails?.data?.data?.user_id, 
+      country: metaDetails?.data?.data?.country,  
+      operating_system: metaDetails?.data?.data?.operating_system, 
+      shell: metaDetails?.data?.data?.shell, 
+      user_time_zone: metaDetails?.data?.data?.user_time_zone
+    };
+
+    
   }
 }

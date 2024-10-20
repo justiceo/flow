@@ -2,7 +2,7 @@ import fs from "fs/promises";
 import path from "path";
 import os from "os";
 import { LogEntryType } from "./const";
-import { ChatGptLog } from "./chatgpt-log.js";
+import { ChatGptLog } from "./chatgpt-log";
 
 
 
@@ -10,7 +10,7 @@ import { ChatGptLog } from "./chatgpt-log.js";
 interface LogEntry {
   type: typeof LogEntryType[keyof typeof LogEntryType];
   timestamp: string;
-  data: any;  // You can further define this type if you know the structure of data
+  data: any; 
 }
 
 interface RequestData {

@@ -1,10 +1,13 @@
-import { flow } from "../src/flow.js";
+import { flow } from "../src/flow";
 
 describe("Flow", () => {
-  it("should write basic logs", async () => {
-    flow.logPrompt("Hello, World!");
+  it("should log prompts, requests, responses, function calls, and custom metadata", async () => {
+    // Log Prompt
+    flow.logPrompt("Hello, World!", "user-input");
+
+    // Log Request
     flow.logRequest({
-      model: "gpt-3.5-turbo",
+      model: "gpt-4o-mini",
       messages: [
         {
           role: "user",
@@ -18,7 +21,43 @@ describe("Flow", () => {
       max_tokens: 100,
       stream: true,
     });
+
+    // Log Response
+    flow.logResponse({
+      choices: [
+        {
+          message: {
+            role: "assistant",
+            content: "Welcome!",
+          },
+        },
+      ],
+    });
+
+    // Log Function Call
+    flow.logFunctionCall({
+      name: "search",
+      arguments: { query: "Lagos" },
+    });
+
+    // Log Custom Meta Data
+    flow.log("meta", {
+      output_mode: "streaming",
+      user_id: "hashed_user_id",
+      country: "Nigeria",
+      operating_system: "mac os",
+      shell: "/bin/bash",
+      user_time_zone: "WAT",
+    });
+
+    // Flush logs
     const logEntry = await flow.flushLogs();
+
+    // Assertions
     expect(logEntry.request.prompt).toBe("Hello, World!");
+    expect(logEntry.response.responseText).toBe("Welcome!");
+    expect(logEntry.functionCalls[0].name).toBe("search");
+    expect(logEntry.functionCalls[0].arguments.query).toBe("Lagos");
+    expect(logEntry.meta.user_id).toBe("hashed_user_id");
   });
 });
