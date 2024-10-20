@@ -1,0 +1,122 @@
+[
+    {
+        "model": "gemini-1.5-pro",
+        "model_family": "gemini",
+        "request_context_window": 2000000,
+        "model_type": "text", 
+        "max_tokens_per_minute": 4000000, 
+        "max_requests_per_minute": 1000, 
+        "max_input_tokens": 2097152, 
+        "max_output_tokens": 8192,
+        "input_cost_10k": 0.025, 
+        "output_cost_10k": 0.10,
+        "developer": "Google DeepMind", 
+        "provider": "Google Cloud Platform", 
+        "pricing_page": "https://ai.google.dev/pricing#1_5pro", 
+        "pricing_plan": "Pay-as-you-go", 
+        "updated": "2024-10-25"
+    },
+    {
+        "model": "gemini-1.5-pro",
+        "model_family": "gemini",
+        "request_context_window": 128000,
+        "model_type": "text", 
+        "max_tokens_per_minute": 4000000, 
+        "max_requests_per_minute": 1000, 
+        "max_input_tokens": 2097152, 
+        "max_output_tokens": 8192,
+        "input_cost_10k": 0.0125, 
+        "output_cost_10k": 0.05,
+        "developer": "Google DeepMind", 
+        "provider": "Google Cloud Platform", 
+        "pricing_page": "https://ai.google.dev/pricing#1_5pro", 
+        "pricing_plan": "Pay-as-you-go", 
+        "updated": "2024-10-25"
+    },
+    
+    {
+        "model": "llama-3.1-405b",
+        "model_family": "llama", 
+        "model_type": "text", 
+        "max_tokens_per_minute": 780, 
+        "max_requests_per_minute": null, 
+        "request_context_window": 128000,
+        "max_output_tokens": 2048, 
+        "input_cost_10k": 0.0533, 
+        "output_cost_10k": 0.16, 
+        "developer": "Meta AI", 
+        "provider": "Azure", 
+        "pricing_page": "https://azuremarketplace.microsoft.com/en-us/marketplace/apps/metagenai.meta-llama-3-1-405b-instruct-offer?tab=PlansAndPrice", 
+        "pricing_plan": "Pay-as-you-go", 
+        "updated": "2024-10-25"
+    },
+    
+    {
+        "model": "gpt-4o", 
+        "model_family": "chatgpt", 
+        "model_type": "text", 
+        "max_tokens_per_minute": 5520, 
+        "max_requests_per_minute": null, 
+        "request_context_window": 128000, 
+        "max_output_tokens": 16384, 
+        "input_cost_10k": 0.025, 
+        "output_cost_10k": 0.10, 
+        "developer": "OpenAI", 
+        "provider": "OpenAI", 
+        "pricing_page": "https://openai.com/api/pricing/", 
+        "pricing_plan": "Pay-as-you-go", 
+        "updated": "2024-10-25"
+    },
+    
+    
+    {
+        "model": "claude-3.5-sonnet (June) Tier 1", 
+        "model_family": "claude", 
+        "model_type": "text", 
+        "max_tokens_per_minute": 40000, 
+        "max_requests_per_minute": 50, 
+        "request_context_window": "200k", 
+        "max_output_tokens": null, 
+        "input_cost_10k": 0.03, 
+        "output_cost_10k": 0.15, 
+        "developer": "Anthropic", 
+        "provider": "Anthropic", 
+        "pricing_page": "https://latenode.com/blog/claude-ai-pricing-and-features", 
+        "pricing_plan": "Pay-as-you-go", 
+        "updated": "2024-10-25"
+    },
+    
+    
+    {
+        "model": "gpt-4o mini", 
+        "model_family": "chatgpt", 
+        "model_type": "text", 
+        "max_tokens_per_minute": 5160, 
+        "max_requests_per_minute": null, 
+        "request_context_window": 128000, 
+        "max_output_tokens": 16384, 
+        "input_cost_10k": 0.0015, 
+        "output_cost_10k": 0.006, 
+        "developer": "OpenAI", 
+        "provider": "OpenAI", 
+        "pricing_page": "https://openai.com/api/pricing/", 
+        "pricing_plan": "Pay-as-you-go", 
+        "updated": "2024-10-25"
+    },
+    {
+        "model": "Mistral 7B", 
+        "model_family": "Mistral", 
+        "model_type": "text", 
+        "max_tokens_per_minute": 7800, 
+        "max_requests_per_minute": null, 
+        "request_context_window": 32800, 
+        "max_output_tokens": 8192, 
+        "input_cost_10k": 0.0025, 
+        "output_cost_10k": 0.0025, 
+        "developer": "Mistral", 
+        "provider": "Mistral", 
+        "pricing_page": "https://mistral.ai/technology/#pricing", 
+        "pricing_plan": "Pay-as-you-go", 
+        "updated": "2024-10-30"
+    }
+    ]
