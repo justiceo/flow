@@ -2,6 +2,8 @@ import OpenAI from 'openai';
 import { ChatCompletion } from 'openai/resources';
 import { flow } from './flow';
 import dotenv from 'dotenv';
+import { consoleTransport, fileTransport} from "./transports";
+
 
 dotenv.config();
 
@@ -46,7 +48,7 @@ async function useChatGptApi(prompt: string): Promise<void> {
   flow.logRequest(requestData);
 
   try {
-    const aiResponse: ChatCompletion = await openai.chat.completions.create({
+    const aiResponse: any = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages: [{ role: 'user', content: requestData.prompt }],
       max_tokens: requestData.max_tokens,
@@ -75,9 +77,13 @@ async function useChatGptApi(prompt: string): Promise<void> {
     const functionCall = aiResponse.choices[0]?.message?.function_call;
     if (functionCall && functionCall.name === 'getWeather') {
       flow.logFunctionCall(functionCall);
-      const args = JSON.parse(functionCall.arguments);
-      const weatherData = await getWeather(args.location); 
-      console.log(`Weather Data for ${args.location}:`, weatherData);
+      try {
+        const args = JSON.parse(functionCall.arguments); 
+        const weatherData = await getWeather(args.location);
+        console.log(`Weather Data for ${args.location}:`, weatherData);
+      } catch (parseError) {
+        console.error('Error parsing function call arguments:', parseError);
+      }
     }
 
     await flow.flushLogs();

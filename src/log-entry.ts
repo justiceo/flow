@@ -1,7 +1,8 @@
+import { LogEntryType } from "./const";
 /**
  * Represents the request information in a log entry.
  */
-export class Request {
+export interface Request {
   /** The prompt text */
   prompt?: string;
 
@@ -37,17 +38,19 @@ export class Request {
 
   /** [Optional] The reason for any error in the request */
   errorReason?: string;
+  
+  topP: number;
 }
 
 /**
  * Represents the response information in a log entry.
  */
-export class Response {
+export interface Response {
   /** The response text */
   text?: string;
 
   /** The status of the response */
-  status?: string;
+  status?: number;
 
   /** [Optional] The reason for any error in the response */
   errorReason?: string;
@@ -61,13 +64,14 @@ export class Response {
   /** The timestamp when the response ended */
   endTime?: number;
 
+  /** The output mode (e.g., "streaming", "schema") */
   outputMode?: string;
 }
 
 /**
  * Represents a function call in a log entry.
  */
-export class FunctionCall {
+export interface FunctionCall {
   /** The name of the function called */
   name?: string;
 
@@ -90,7 +94,7 @@ export class FunctionCall {
 /**
  * Represents metadata in a log entry.
  */
-export class Meta {
+export interface Meta {
   /** The total number of tokens in the request and response */
   totalTokenCount?: number;
 
@@ -134,12 +138,12 @@ export class Meta {
 /**
  * Represents a complete log entry.
  */
-export class LogEntry {
+export interface LogEntry {
   /** The ID of the request */
-  requestId?: string;
+  requestId?: string | null;
 
   /** The ID of the session */
-  sessionId?: string;
+  sessionId?: string | null;
 
   /** The request information */
   request?: Request;
@@ -152,4 +156,18 @@ export class LogEntry {
 
   /** The metadata for the log entry */
   meta?: Meta;
+}
+
+/**
+ * Represents an entry in the buffer containing different types of log data.
+ */
+export interface BufferEntry {
+  /** The type of the entry (e.g., "request", "response", "functionCall") */
+  type: LogEntryType;
+
+  /** The timestamp of when the entry was created */
+  timestamp: string;
+
+  /** The actual data of the entry, which can be a request, response, function call, or any other type */
+  data: any;
 }
