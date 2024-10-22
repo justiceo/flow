@@ -31,12 +31,12 @@ export class ChatGptLog {
     const response = buffer.find((e) => e.type === LogEntryType.RESPONSE);
 
     return {
-      responseText: response?.data?.choices?.[0]?.message?.content,
-      finishReason: response?.data?.choices?.[0]?.finish_reason,
+      text: response?.data?.text,
+      finishReason: response?.data?.finishReason,
       completionTime: response?.timestamp,
-      tokenCount: response?.data?.usage?.total_tokens,
+      tokenCount: response?.data?.tokenCount,
       status: response?.data?.status,
-      errorReason: response?.data?.error,
+      errorReason: response?.data?.errorReason,
       startTime: response?.data?.start_time,
       endTime: response?.data?.end_time,
 

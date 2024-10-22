@@ -39,7 +39,7 @@ export interface Request {
   /** [Optional] The reason for any error in the request */
   errorReason?: string;
   
-  topP: number;
+  topP?: number;
 }
 
 /**

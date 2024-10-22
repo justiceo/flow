@@ -65,27 +65,40 @@ describe("Flow", () => {
     // Flush logs
     const logEntry: LogEntry = await flow.flushLogs();
 
-    // Assertions for Request
-    expect(logEntry.request?.prompt).toBe("Hello, World!");
-    expect(logEntry.request?.model).toBe("gpt-4o-mini");
-    expect(logEntry.request?.functionCalls).toEqual(["search", "translate"]);
-
-    // Assertions for Response
-    expect(logEntry.response?.text).toBe("Welcome!");
-    expect(logEntry.response?.status).toBe(200);
-    expect(logEntry.response?.tokenCount).toBe(50);
-    expect(logEntry.response?.outputMode).toBe("streaming");
-    expect(logEntry.response?.startTime).toBeDefined(); // Ensure startTime is logged
-    expect(logEntry.response?.endTime).toBeDefined(); // Ensure endTime is logged
-
-    // Assertions for Function Call
-    expect(logEntry.functionCalls?.[0]?.name).toBe("search");
-    expect(logEntry.functionCalls?.[0]?.args).toBe(JSON.stringify({ query: "Lagos" }));
-
-    // Assertions for Meta Data
-    expect(logEntry.meta?.userId).toBe("hashed_user_id");
-    expect(logEntry.meta?.country).toBe("Nigeria");
-    expect(logEntry.meta?.operatingSystem).toBe("mac os");
-    expect(logEntry.meta?.outputMode).toBe("streaming");
+      // Assertions for Request
+      expect(logEntry?.request?.prompt).toEqual("Hello, World!");
+      expect(logEntry?.request?.model).toEqual("gpt-4o-mini");
+      expect(logEntry?.request?.temperature).toEqual(0.7);
+      expect(logEntry?.request?.maxTokens).toEqual(100);
+      expect(logEntry?.request?.topK).toEqual(50);
+      expect(logEntry?.request?.topP).toEqual(0.9);
+  
+      // Assertions for Response
+      expect(logEntry?.response?.text).toEqual("Welcome!");
+      expect(logEntry?.response?.status).toEqual(200);
+      expect(logEntry?.response?.tokenCount).toEqual(50);
+      expect(logEntry?.response?.errorReason).toEqual("Error");
+  
+      // Assertions for Function Call
+      expect(logEntry?.functionCalls?.[0]?.name).toEqual("search");
+      expect(logEntry?.functionCalls?.[0]?.args).toEqual(JSON.stringify({ query: "Lagos" }));
+      expect(logEntry?.functionCalls?.[0]?.result).toEqual("Lagos is a city in Nigeria");
+      expect(logEntry?.functionCalls?.[0]?.exitCode).toEqual(0);
+  
+      // Assertions for Meta Data
+      expect(logEntry?.meta?.totalTokenCount).toEqual(100);
+      expect(logEntry?.meta?.inputTokenCost1k).toEqual(0.5);
+      expect(logEntry?.meta?.outputTokenCost1k).toEqual(0.7);
+      expect(logEntry?.meta?.triggerSource).toEqual("API");
+      expect(logEntry?.meta?.outputMode).toEqual("streaming");
+      expect(logEntry?.meta?.userId).toEqual("hashed_user_id");
+      expect(logEntry?.meta?.country).toEqual("Nigeria");
+      expect(logEntry?.meta?.operatingSystem).toEqual("mac os");
+      expect(logEntry?.meta?.shell).toEqual("/bin/bash");
+      expect(logEntry?.meta?.userTimeZone).toEqual("WAT");
+      expect(logEntry?.meta?.machineId).toEqual("machine_id");
+      expect(logEntry?.meta?.memory).toEqual(16);
+      expect(logEntry?.meta?.env).toEqual("production");
+  
   });
 });
