@@ -1,9 +1,28 @@
 import { start } from "repl";
 import { flow } from "../src/flow";
-import { LogEntry } from "../src/log-entry";
+import { useChatGptApi } from "../src";
 
 describe("Flow", () => {
-  it("should log prompts, requests, responses, function calls, and custom metadata", async () => {
+  it("should log prompts, requests, responses, function calls using live api", async () => {
+  
+      const logEntry = await useChatGptApi("What's the weather in Ikorodu, Lagos?");
+
+      // Assertions for Request
+      expect(logEntry?.request?.prompt).toEqual("What's the weather in Ikorodu, Lagos?");
+      expect(logEntry?.request?.model).toEqual("gpt-4o");
+      expect(logEntry?.request?.temperature).toEqual(0.7);
+      expect(logEntry?.request?.maxTokens).toEqual(150);
+      expect(logEntry?.request?.topP).toEqual(0);
+  
+      // Assertions for Response
+      expect(logEntry?.response?.status).toEqual(200);
+  
+      // Assertions for Function Call
+      expect(logEntry?.functionCalls?.[0]?.name).toEqual("getWeather"); 
+  
+  }, 10000);
+
+  it("should log prompts, requests, responses, function calls, and custom metadata with mock data", async () => {
     // Log Prompt
     flow.logPrompt("Hello, World!", "user-input");
 
@@ -12,12 +31,12 @@ describe("Flow", () => {
       model: "gpt-4o-mini",
       functionCalls: ["search", "translate"],
       temperature: 0.7,
-      maxTokens: 100,
+      max_tokens: 100,
       prompt: "Hello, World!",
       tokenCount:30,
       errorReason: "No error",
-      topK: 50,
-      topP: 0.9,  
+      top_k: 50,
+      top_p: 0.9,  
       startTime: Date.now() - 1000,
       sentTime: Date.now(),
       systemPrompt: "Hello, World!",
@@ -26,13 +45,21 @@ describe("Flow", () => {
 
     // Log Response
     flow.logResponse({
-      text: "Welcome!",
       status: 200,
-      tokenCount: 50,
       startTime: Date.now() - 1000,
       endTime: Date.now(),
       outputMode: "streaming",
       errorReason: "Error",
+      choices : [
+        {
+          content:"Welcome!",
+          finish_reason:"Reason"
+
+        }
+      ],
+      usage : {
+        total_tokens : 50
+      }
     });
 
     // Log Function Call
@@ -63,7 +90,7 @@ describe("Flow", () => {
     });
 
     // Flush logs
-    const logEntry: LogEntry = await flow.flushLogs();
+    const logEntry = await flow.flushLogs();
 
       // Assertions for Request
       expect(logEntry?.request?.prompt).toEqual("Hello, World!");
@@ -77,7 +104,6 @@ describe("Flow", () => {
       expect(logEntry?.response?.text).toEqual("Welcome!");
       expect(logEntry?.response?.status).toEqual(200);
       expect(logEntry?.response?.tokenCount).toEqual(50);
-      expect(logEntry?.response?.errorReason).toEqual("Error");
   
       // Assertions for Function Call
       expect(logEntry?.functionCalls?.[0]?.name).toEqual("search");

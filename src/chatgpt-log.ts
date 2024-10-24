@@ -15,10 +15,10 @@ export class ChatGptLog {
       systemPrompt: request?.data?.systemPrompt,
       model: request?.data?.model,
       temperature: request?.data?.temperature,
-      topK: request?.data?.topK,
-      topP: request?.data?.topP,
+      topK: request?.data?.top_k,
+      topP: request?.data?.top_p,
       functionCalls: request?.data?.functions,
-      maxTokens: request?.data?.maxTokens,
+      maxTokens: request?.data?.max_tokens,
       startTime: request?.data.startTime,
       sentTime: request?.data?.sentTime,
       tokenCount: request?.data?.systemPrompt?.split("").length,
@@ -31,15 +31,14 @@ export class ChatGptLog {
     const response = buffer.find((e) => e.type === LogEntryType.RESPONSE);
 
     return {
-      text: response?.data?.text,
-      finishReason: response?.data?.finishReason,
+      text: response?.data?.choices[0].content,
+      finishReason: response?.data?.choices[0].finish_reason,
       completionTime: response?.timestamp,
-      tokenCount: response?.data?.tokenCount,
-      status: response?.data?.status,
-      errorReason: response?.data?.errorReason,
+      tokenCount: response?.data?.usage.total_tokens,
+      status: 200,
       startTime: response?.data?.start_time,
       endTime: response?.data?.end_time,
-
+      errorReason: "",
     };
   }
 

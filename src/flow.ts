@@ -62,7 +62,7 @@ class Flow {
     });
   }
 
-  logResponse(responseData: Response): void {
+  logResponse(responseData: any): void {
     this.buffer.push({
       type: LogEntryType.RESPONSE,
       timestamp: new Date().toISOString(),
