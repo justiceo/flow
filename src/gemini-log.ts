@@ -1,26 +1,21 @@
-import { start } from "repl";
 import { LogEntryType } from "./const";
 import { LogEntry, BufferEntry, Request, Response, FunctionCall, Meta } from "./log-entry";
 
-
-
-// ChatGptLog class in TypeScript
-export class ChatGptLog {
+// GeminiLog class in TypeScript
+export class GeminiLog {
   processRequest(buffer: Readonly<BufferEntry[]>): Request | {} {
     const prompt = buffer.find((e) => e.type === LogEntryType.PROMPT);
     const request = buffer.find((e) => e.type === LogEntryType.REQUEST);
 
     return {
       prompt: prompt?.data?.prompt,
-      systemPrompt: request?.data?.systemPrompt,
       model: request?.data?.model,
-      temperature: request?.data?.temperature,
-      topK: request?.data?.top_k,
-      topP: request?.data?.top_p,
-      functionCalls: request?.data?.functions,
-      maxTokens: request?.data?.max_tokens,
-      tokenCount: request?.data?.systemPrompt?.split("").length,
-      errorReason: "",
+      temperature: request?.data?.generationConfig.temperature,
+      // maxTokens: request?.data?.max_tokens,
+      maxOutputTokens: request?.data?.generationConfig.maxOutputTokens,
+      topP: request?.data?.generationConfig.topP,
+      topK: request?.data?.generationConfig.topK,
+      systemPrompt: request?.data?.systemPrompt,
       outputMode: request?.data?.outputMode,
     };
   }
@@ -29,10 +24,10 @@ export class ChatGptLog {
     const response = buffer.find((e) => e.type === LogEntryType.RESPONSE);
 
     return {
-      text: response?.data?.choices[0].content,
-      finishReason: response?.data?.choices[0].finish_reason,
+      text: response?.data?.text() ? response?.data?.text() : "",
+      finishReason: response?.data?.candidates[0]?.finishReason,
       completionTime: response?.timestamp,
-      tokenCount: response?.data?.usage.total_tokens,
+      tokenCount: response?.data?.usageMetadata.totalTokenCount,
       status: 200,
       startTime: response?.data?.start_time,
       endTime: response?.data?.end_time,
@@ -54,7 +49,6 @@ export class ChatGptLog {
 
     return functionCalls;
   }
-
 
   processMeta(buffer: Readonly<BufferEntry[]>): Meta {
     const metaDetails = buffer.find((entry) => entry.type === LogEntryType.CUSTOM);    

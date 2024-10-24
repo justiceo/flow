@@ -27,12 +27,6 @@ export interface Request {
   /** The maximum number of tokens for the response */
   maxTokens?: number;
 
-  /** The timestamp when the request started */
-  startTime?: number;
-
-  /** The timestamp when the request was sent */
-  sentTime?: number;
-
   /** The number of tokens in the request */
   tokenCount?: number;
 
@@ -140,10 +134,10 @@ export interface Meta {
  */
 export interface LogEntry {
   /** The ID of the request */
-  requestId?: string | null;
+  requestId?: string;
 
   /** The ID of the session */
-  sessionId?: string | null;
+  sessionId?: string;
 
   /** The request information */
   request?: Request;

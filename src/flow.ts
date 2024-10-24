@@ -3,28 +3,21 @@ import path from "path";
 import os from "os";
 import { LogEntryType } from "./const";
 import { ChatGptLog } from "./chatgpt-log";
+import { GeminiLog } from "./gemini-log";
 import { LogEntry, BufferEntry, Request, Response, FunctionCall, Meta } from "./log-entry";
 
 
 // Class definition
 class Flow {
   private buffer: BufferEntry[] = [];
-  private sessionId: string | null = null;
-  private currentRequestId: string | null = null;
+  private sessionId: string | undefined = undefined;
+  private currentRequestId: string | undefined = undefined;
   private static instance: Flow | null = null;
-  private handlers: { [key: string]: ChatGptLog } = {
+  private handlers: { [key: string]: ChatGptLog | GeminiLog } = {
     chatgpt: new ChatGptLog(),
+    gemini: new GeminiLog(),
   };
 
-  constructor() {
-    // Initialize handlers in the constructor
-    this.buffer = [];
-    this.sessionId = null;
-    this.currentRequestId = null;
-    this.handlers = {
-      chatgpt: new ChatGptLog(),
-    };
-  }
 
   // Singleton pattern to get instance
   static getInstance(): Flow {
@@ -70,7 +63,7 @@ class Flow {
     });
   }
 
-  logFunctionCall(functionCallData: FunctionCall): void {
+  logFunctionCall(functionCallData: any): void {
     this.buffer.push({
       type: LogEntryType.FUNCTION_CALL,
       timestamp: new Date().toISOString(),
@@ -78,7 +71,7 @@ class Flow {
     });
   }
 
-  log(key: string, data: Meta ): void {
+  log(key: string, data: any ): void {
     this.buffer.push({
       type: LogEntryType.CUSTOM,
       timestamp: new Date().toISOString(),
@@ -94,11 +87,11 @@ class Flow {
     });
   }
 
-  getSessionId(): string | null {
+  getSessionId(): string | undefined {
     return this.sessionId;
   }
 
-  getRequestId(): string | null {
+  getRequestId(): string | undefined {
     return this.currentRequestId;
   }
 
