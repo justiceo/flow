@@ -80,11 +80,9 @@ export async function useChatGptApi(prompt: string) {
   }
 }
 
-useChatGptApi("What's the weather in Ikorodu, Lagos?");
-
 describe("Flow", () => {
 
-  it.only("should log prompts, requests, responses, function calls using live api", async () => {
+  it("should log prompts, requests, responses, function calls using live api", async () => {
     const logEntry = await useChatGptApi(
       "What's the weather in Ikorodu, Lagos?"
     );
@@ -213,4 +211,3 @@ describe("Flow", () => {
     expect(logEntry?.meta?.env).toEqual("production");
   });
 });
-
