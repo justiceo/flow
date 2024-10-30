@@ -3,6 +3,7 @@ import path from "path";
 import os from "os";
 import { LogEntryType } from "./const";
 import { ChatGptLog } from "./chatgpt-log";
+import { GeminiLog } from "./gemini-log";
 import { LogEntry, BufferEntry, Request, Response, FunctionCall, Meta } from "./log-entry";
 
 
@@ -12,8 +13,9 @@ class Flow {
   private sessionId: string | undefined = undefined;
   private currentRequestId: string | undefined = undefined;
   private static instance: Flow | null = null;
-  private handlers: { [key: string]: ChatGptLog } = {
+  private handlers: { [key: string]: ChatGptLog | GeminiLog } = {
     chatgpt: new ChatGptLog(),
+    gemini: new GeminiLog(),
   };
 
 
