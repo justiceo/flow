@@ -2,8 +2,8 @@
 
     
     {
-        "s/n" : 1,
-        "model": "gemini-1.5-pro",
+        "index" : 1,
+        "model": "models/gemini-1.5-pro",
         "model_family": "gemini",
         "request_context_window": 128000,
         "model_type": "multimodal", 
@@ -17,11 +17,12 @@
         "provider": "Google Cloud Platform", 
         "pricing_page": "https://ai.google.dev/pricing#1_5pro", 
         "pricing_plan": "Pay-as-you-go", 
-        "updated": "2024-10-25"
+        "model_info_page" : "https://ai.google.dev/gemini-api/docs/models/gemini#gemini-1.5-pro",
+        "updated": "2024-11-1"
     },
     
     {
-        "s/n" : 2,
+        "index" : 2,
         "model": "llama-3.1-405b",
         "model_family": "llama", 
         "model_type": "multimodal", 
@@ -39,7 +40,7 @@
     },
     
     {
-        "s/n" : 3,
+        "index" : 3,
         "model": "gpt-4o", 
         "model_family": "chatgpt", 
         "model_type": "multimodal", 
@@ -57,7 +58,7 @@
     },
      
     {
-        "s/n" : 4,
+        "index" : 4,
         "model": "claude-3-5-sonnet-20241022", 
         "model_family": "claude", 
         "model_type": "multimodal", 
@@ -76,7 +77,7 @@
     },
      
     {
-        "s/n" : 5,
+        "index" : 5,
         "model": "gpt-4o-mini", 
         "model_family": "chatgpt", 
         "model_type": "text", 
@@ -93,7 +94,7 @@
         "updated": "2024-10-25"
     },
     {
-        "s/n" : 6,
+        "index" : 6,
         "model": "open-mistral-7b", 
         "model_family": "Mistral", 
         "model_type": "text", 
@@ -112,7 +113,7 @@
     },
 
     {  
-        "s/n" : 7,
+        "index" : 7,
         "model": "jamba-1.5-large", 
         "model_family": "Jamba", 
         "model_type": "text",
