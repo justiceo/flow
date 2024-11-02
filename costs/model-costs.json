@@ -1,28 +1,14 @@
 [
+
+    
     {
-        "model": "gemini-1.5-pro",
-        "model_family": "gemini",
-        "request_context_window": 2000000,
-        "model_type": "text", 
-        "max_tokens_per_minute": 4000000, 
-        "max_requests_per_minute": 1000, 
-        "max_input_tokens": 2097152, 
-        "max_output_tokens": 8192,
-        "input_cost_10k": 0.025, 
-        "output_cost_10k": 0.10,
-        "developer": "Google DeepMind", 
-        "provider": "Google Cloud Platform", 
-        "pricing_page": "https://ai.google.dev/pricing#1_5pro", 
-        "pricing_plan": "Pay-as-you-go", 
-        "updated": "2024-10-25"
-    },
-    {
-        "model": "gemini-1.5-pro",
+        "index" : 1,
+        "model": "models/gemini-1.5-pro",
         "model_family": "gemini",
         "request_context_window": 128000,
-        "model_type": "text", 
+        "model_type": "multimodal", 
         "max_tokens_per_minute": 4000000, 
-        "max_requests_per_minute": 1000, 
+        "max_request_tokens_per_minute": 1000, 
         "max_input_tokens": 2097152, 
         "max_output_tokens": 8192,
         "input_cost_10k": 0.0125, 
@@ -31,14 +17,16 @@
         "provider": "Google Cloud Platform", 
         "pricing_page": "https://ai.google.dev/pricing#1_5pro", 
         "pricing_plan": "Pay-as-you-go", 
-        "updated": "2024-10-25"
+        "model_info_page" : "https://ai.google.dev/gemini-api/docs/models/gemini#gemini-1.5-pro",
+        "updated": "2024-11-1"
     },
     
     {
+        "index" : 2,
         "model": "llama-3.1-405b",
         "model_family": "llama", 
-        "model_type": "text", 
-        "max_tokens_per_minute": 780, 
+        "model_type": "multimodal", 
+        "max_request_tokens_per_minute": 780, 
         "max_requests_per_minute": null, 
         "request_context_window": 128000,
         "max_output_tokens": 2048, 
@@ -52,10 +40,11 @@
     },
     
     {
+        "index" : 3,
         "model": "gpt-4o", 
         "model_family": "chatgpt", 
-        "model_type": "text", 
-        "max_tokens_per_minute": 5520, 
+        "model_type": "multimodal", 
+        "max_request_tokens_per_minute": 5520, 
         "max_requests_per_minute": null, 
         "request_context_window": 128000, 
         "max_output_tokens": 16384, 
@@ -67,31 +56,32 @@
         "pricing_plan": "Pay-as-you-go", 
         "updated": "2024-10-25"
     },
-    
-    
+     
     {
-        "model": "claude-3.5-sonnet (June) Tier 1", 
+        "index" : 4,
+        "model": "claude-3-5-sonnet-20241022", 
         "model_family": "claude", 
-        "model_type": "text", 
-        "max_tokens_per_minute": 40000, 
+        "model_type": "multimodal", 
+        "max_request_tokens_per_minute": 40000, 
         "max_requests_per_minute": 50, 
-        "request_context_window": "200k", 
-        "max_output_tokens": null, 
+        "request_context_window": 200000, 
+        "max_output_tokens": 8192, 
         "input_cost_10k": 0.03, 
         "output_cost_10k": 0.15, 
         "developer": "Anthropic", 
         "provider": "Anthropic", 
         "pricing_page": "https://latenode.com/blog/claude-ai-pricing-and-features", 
         "pricing_plan": "Pay-as-you-go", 
-        "updated": "2024-10-25"
+        "updated": "2024-11-1",
+        "model_info_page" : "https://docs.anthropic.com/en/docs/about-claude/models#model-comparison-table"
     },
-    
-    
+     
     {
-        "model": "gpt-4o mini", 
+        "index" : 5,
+        "model": "gpt-4o-mini", 
         "model_family": "chatgpt", 
         "model_type": "text", 
-        "max_tokens_per_minute": 5160, 
+        "max_request_tokens_per_minute": 5160, 
         "max_requests_per_minute": null, 
         "request_context_window": 128000, 
         "max_output_tokens": 16384, 
@@ -104,10 +94,11 @@
         "updated": "2024-10-25"
     },
     {
-        "model": "Mistral 7B", 
+        "index" : 6,
+        "model": "open-mistral-7b", 
         "model_family": "Mistral", 
         "model_type": "text", 
-        "max_tokens_per_minute": 7800, 
+        "max_request_tokens_per_minute": 7800, 
         "max_requests_per_minute": null, 
         "request_context_window": 32800, 
         "max_output_tokens": 8192, 
@@ -117,6 +108,26 @@
         "provider": "Mistral", 
         "pricing_page": "https://mistral.ai/technology/#pricing", 
         "pricing_plan": "Pay-as-you-go", 
+        "model_info_page" : "https://mistral.ai/technology/#pricing",
         "updated": "2024-10-30"
+    },
+
+    {  
+        "index" : 7,
+        "model": "jamba-1.5-large", 
+        "model_family": "Jamba", 
+        "model_type": "text",
+        "max_request_tokens_per_minute":4000000,
+        "max_requests_per_minute": 1000, 
+        "request_context_window": 256000, 
+        "max_output_tokens": 4096, 
+        "input_cost_10k": 0.02, 
+        "output_cost_10k": 0.04, 
+        "developer": "Ai21Labs", 
+        "provider": "Azure", 
+        "pricing_page": "https://www.ai21.com/pricing", 
+        "pricing_plan": "Pay-as-you-go", 
+        "model_info_page" : "https://www.ai21.com/pricing, https://artificialanalysis.ai/models/jamba-1-5-large/providers, https://docs.ai21.com/docs/rate-limits, https://techcommunity.microsoft.com/t5/ai-ai-platform-blog/introducing-ai21-labs-jamba-1-5-large-and-jamba-1-5-mini-on/ba-p/4220040#:~:text=Jamba%201.5%20Mini%20has%2012,or%20characters%20at%20a%20time.",
+        "updated": "2024-11-1"
     }
     ]
