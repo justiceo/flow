@@ -118,16 +118,149 @@
         "model_family": "Jamba", 
         "model_type": "text",
         "max_request_tokens_per_minute":4000000,
-        "max_requests_per_minute": 1000, 
+        "max_requests_per_minute": 200, 
         "request_context_window": 256000, 
         "max_output_tokens": 4096, 
         "input_cost_10k": 0.02, 
         "output_cost_10k": 0.04, 
         "developer": "Ai21Labs", 
-        "provider": "Azure", 
+        "provider": "Ai21Labs", 
         "pricing_page": "https://www.ai21.com/pricing", 
         "pricing_plan": "Pay-as-you-go", 
         "model_info_page" : "https://www.ai21.com/pricing, https://artificialanalysis.ai/models/jamba-1-5-large/providers, https://docs.ai21.com/docs/rate-limits, https://techcommunity.microsoft.com/t5/ai-ai-platform-blog/introducing-ai21-labs-jamba-1-5-large-and-jamba-1-5-mini-on/ba-p/4220040#:~:text=Jamba%201.5%20Mini%20has%2012,or%20characters%20at%20a%20time.",
         "updated": "2024-11-1"
+    },
+
+    {
+        "index" : 8,
+        "model": "models/gemini-1.5-flash-8b",
+        "model_family": "gemini",
+        "request_context_window": 128000,
+        "model_type": "multimodal", 
+        "max_request_tokens_per_minute": 4000000, 
+        "max_requests_per_minute": 4000, 
+        "max_input_tokens": 1048576, 
+        "max_output_tokens": 8192,
+        "input_cost_10k": 0.000375, 
+        "output_cost_10k": 0.0015,
+        "developer": "Google DeepMind", 
+        "provider": "Google Cloud Platform", 
+        "pricing_page": "https://ai.google.dev/pricing#1_5flash-8B", 
+        "pricing_plan": "Pay-as-you-go", 
+        "model_info_page" : "https://ai.google.dev/gemini-api/docs/models/gemini#gemini-1.5-flash-8b",
+        "updated": "2024-11-5"
+    },
+
+    {
+        "index" : 9,
+        "model": "models/gemini-1.5-flash",
+        "model_family": "gemini",
+        "request_context_window": 128000,
+        "model_type": "multimodal", 
+        "max_request_tokens_per_minute": 4000000, 
+        "max_requests_per_minute": 2000,
+        "max_input_tokens": 1048576, 
+        "max_output_tokens": 8192,
+        "input_cost_10k": 0.00075, 
+        "output_cost_10k": 0.003,
+        "developer": "Google DeepMind", 
+        "provider": "Google Cloud Platform", 
+        "pricing_page": "https://ai.google.dev/pricing#1_5flash", 
+        "pricing_plan": "Pay-as-you-go", 
+        "model_info_page" : "https://ai.google.dev/gemini-api/docs/models/gemini#gemini-1.5-flash",
+        "updated": "2024-11-5"
+    },
+
+    {
+        "index" : 10,
+        "model": "llama-3.2-90b-vision-instruct",
+        "model_family": "llama", 
+        "model_type": "multimodal", 
+        "max_request_tokens_per_minute": null, 
+        "max_requests_per_minute": null, 
+        "request_context_window": 128000,
+        "max_output_tokens": null, 
+        "input_cost_10k": 0.02, 
+        "output_cost_10k": 0.02, 
+        "developer": "Meta AI", 
+        "provider": "AWS", 
+        "pricing_page": "https://aws.amazon.com/bedrock/pricing/", 
+        "pricing_plan": "Pay-as-you-go", 
+        "model_info_page": {
+            "https://github.com/marketplace/models/azureml-meta/Llama-3-2-90B-Vision-Instruct" : ["request_context_window"]
+        },
+        "updated": "2024-11-5"
+    },
+
+    {  
+        "index" : 11,
+        "model": "jamba-1.5-mini", 
+        "model_family": "Jamba", 
+        "model_type": "text",
+        "max_request_tokens_per_minute":4000000,
+        "max_requests_per_minute": 200, 
+        "request_context_window": 256000, 
+        "max_output_tokens": 4096, 
+        "input_cost_10k": 0.002, 
+        "output_cost_10k": 0.004, 
+        "developer": "Ai21Labs", 
+        "provider": "Ai21Labs", 
+        "pricing_page": "https://www.ai21.com/pricing", 
+        "pricing_plan": "Pay-as-you-go", 
+        "model_info_page": {
+            "https://github.com/marketplace/models/azureml-meta/Llama-3-2-90B-Vision-Instruct" : ["request_context_window", "max_output_tokens"],
+            "https://docs.ai21.com/docs/rate-limits" : ["max_requests_per_minute"],
+            "https://techcommunity.microsoft.com/blog/aiplatformblog/introducing-ai21-labs-jamba-1-5-large-and-jamba-1-5-mini-on-azure-ai-models-as-a/4220040" : ["max_request_tokens_per_minute"]
+        
+        },
+        "updated": "2024-11-5"
+    },
+
+
+    {  
+        "index" : 12,
+        "model": "Qwen/Qwen2.5-Coder-32B-Instruct",
+        "model_family": "Qwen", 
+        "model_type": "multimodal",
+        "max_request_tokens_per_minute":null,
+        "max_requests_per_minute": null, 
+        "request_context_window": 131000, 
+        "max_output_tokens": 8192, 
+        "input_cost_10k": 0.0018, 
+        "output_cost_10k": 0.0018, 
+        "developer": "Alibaba", 
+        "provider": "DeepInfra", 
+        "pricing_page": null, 
+        "pricing_plan": "Pay-as-you-go", 
+        "model_info_page" : {
+            "https://artificialanalysis.ai/models/qwen2-5-72b-instruct/providers" : ["request_context_window"],
+            "https://openrouter.ai/qwen/qwen-2.5-coder-32b-instruct": ["max_output_tokens"]
+        },
+
+        "updated": "2024-11-14"
+    },
+
+    {  
+        "index" : 13,
+        "model": "claude-3-5-haiku-20241022",
+        "model_family": "claude", 
+        "model_type": "multimodal",
+        "max_request_tokens_per_minute":null,
+        "max_requests_per_minute": null, 
+        "request_context_window": 200000, 
+        "max_output_tokens": 8192, 
+        "input_cost_10k": 0.01, 
+        "output_cost_10k": 0.05, 
+        "developer": "Anthropic", 
+        "provider": "Anthropic", 
+        "pricing_page": "https://www.anthropic.com/pricing#anthropic-api", 
+        "pricing_plan": "Pay-as-you-go", 
+        "model_info_page" : {
+            "https://openrouter.ai/anthropic/claude-3-5-haiku": ["max_output_tokens"]
+        },
+
+        "updated": "2024-11-14"
     }
+
+
     ]
