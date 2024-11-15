@@ -6,6 +6,7 @@ import path from "path";
 import { LogEntryType } from "./const";
 import { ChatGptLog } from "./chatgpt-log";
 import { GeminiLog } from "./gemini-log";
+import { Llamalog } from "./llama-log";
 import { LogEntry, BufferEntry, Request, Response, FunctionCall, Meta } from "./log-entry";
 
 
@@ -14,9 +15,10 @@ class Flow {
   private sessionId: string | undefined = undefined;
   private currentRequestId: string | undefined = undefined;
   private static instance: Flow | null = null;
-  private handlers: { [key: string]: ChatGptLog | GeminiLog } = {
+  private handlers: { [key: string]: ChatGptLog | GeminiLog | Llamalog } = {
     chatgpt: new ChatGptLog(),
     gemini: new GeminiLog(),
+    llama: new Llamalog(),
   };
 
 
@@ -121,6 +123,8 @@ class Flow {
       return "claude";
     } else if (entry.data?.model?.includes("gpt")) {
       return "chatgpt";
+    } else if (entry.data?.model?.includes("llama")) {
+      return "llama";
     }
     return "chatgpt"; // Default fallback
   }
