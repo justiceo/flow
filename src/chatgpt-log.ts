@@ -1,10 +1,13 @@
-import { start } from "repl";
+// System packages
+import os from 'os';
+
+// Third-party libraries
+import { machineIdSync } from 'node-machine-id';
+
+// Local dependencies
 import { LogEntryType } from "./const";
-import { LogEntry, BufferEntry, Request, Response, FunctionCall, Meta } from "./log-entry";
-
-
-
-// ChatGptLog class in TypeScript
+import { BufferEntry, Request, Response, FunctionCall, Meta } from "./log-entry";
+import { getModelCost } from "./cost";
 export class ChatGptLog {
   processRequest(buffer: Readonly<BufferEntry[]>): Request | {} {
     const prompt = buffer.find((e) => e.type === LogEntryType.PROMPT);
@@ -56,22 +59,25 @@ export class ChatGptLog {
   }
 
 
-  processMeta(buffer: Readonly<BufferEntry[]>): Meta {
-    const metaDetails = buffer.find((entry) => entry.type === LogEntryType.CUSTOM);    
+  async processMeta(buffer: Readonly<BufferEntry[]>){
+    const model = buffer.find((entry) => entry.type === LogEntryType.REQUEST)?.data?.model;
+    const modelCost = await getModelCost(model);
+    const tokenCount = buffer.find((entry) => entry.type === LogEntryType.RESPONSE)?.data?.usage.total_tokens;
+
     return {
-      totalTokenCount: metaDetails?.data?.data?.totalTokenCount,
-      inputTokenCost1k: metaDetails?.data?.data?.inputTokenCost1k,
-      outputTokenCost1k: metaDetails?.data?.data?.outputTokenCost1k,
-      triggerSource: metaDetails?.data?.data?.triggerSource,
-      outputMode: metaDetails?.data?.data?.outputMode,
-      userId: metaDetails?.data?.data?.userId,
-      country: metaDetails?.data?.data?.country,
-      operatingSystem: metaDetails?.data?.data?.operatingSystem,
-      shell: metaDetails?.data?.data?.shell,
-      userTimeZone: metaDetails?.data?.data?.userTimeZone,
-      memory: metaDetails?.data?.data?.memory,
-      machineId: metaDetails?.data?.data?.machineId,
-      env: metaDetails?.data?.data?.env,
+      totalTokenCount:  tokenCount,
+      inputTokenCost1k: modelCost?.tokensInCost,
+      outputTokenCost1k: modelCost?.tokensOutCost,
+      triggerSource: "",
+      // outputMode: metaDetails?.data?.data?.outputMode,
+      userId: "",
+      country: "",
+      operatingSystem: `${os.platform()}/${os.release()}`,
+      shell: os.userInfo().shell || 'Unknown',
+      userTimeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      memory: 0,
+      machineId: machineIdSync(),
+      env: process.env.NODE_ENV || 'development',
     };
   }
 }

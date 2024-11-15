@@ -1,13 +1,14 @@
+// System packages
 import fs from "fs/promises";
 import path from "path";
-import os from "os";
+
+// Local dependencies
 import { LogEntryType } from "./const";
 import { ChatGptLog } from "./chatgpt-log";
 import { GeminiLog } from "./gemini-log";
 import { LogEntry, BufferEntry, Request, Response, FunctionCall, Meta } from "./log-entry";
 
 
-// Class definition
 class Flow {
   private buffer: BufferEntry[] = [];
   private sessionId: string | undefined = undefined;
@@ -95,7 +96,7 @@ class Flow {
     return this.currentRequestId;
   }
 
-  private createLogEntry(readonlyBuffer: Readonly<BufferEntry[]>): LogEntry {
+  private async createLogEntry(readonlyBuffer: Readonly<BufferEntry[]>){
     const modelFamily = this.getModelFamily(readonlyBuffer);
     const logEntry = {
       requestId: this.currentRequestId,
@@ -103,7 +104,7 @@ class Flow {
       request: this.handlers[modelFamily].processRequest(readonlyBuffer),
       response: this.handlers[modelFamily].processResponse(readonlyBuffer),
       functionCalls: this.handlers[modelFamily].processFunctionCalls(readonlyBuffer),
-      meta: this.handlers[modelFamily].processMeta(readonlyBuffer),
+      meta: await this.handlers[modelFamily].processMeta(readonlyBuffer),
     };
     return logEntry;
   }
@@ -130,7 +131,7 @@ class Flow {
     }
 
     const readonlyBuffer: Readonly<BufferEntry[]> = Object.freeze([...this.buffer]);
-    const logEntry = this.createLogEntry(readonlyBuffer);
+    const logEntry = await this.createLogEntry(readonlyBuffer);
 
     if (transport) { 
       transport(logEntry); 

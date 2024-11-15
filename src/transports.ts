@@ -1,6 +1,10 @@
+// System packages
 import fs from "fs/promises";
 import path from "path";
+
+// Local dependencies
 import { LogEntry } from "./log-entry";
+
 
 export const consoleTransport = (logEntry: LogEntry) => {
   console.log(logEntry);
