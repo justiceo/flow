@@ -7,8 +7,6 @@ import { LogEntry } from "../log-entry";
 
 // Third party packages
 import dotenv from "dotenv";
-import { db } from "./firebase";
-import { doc, setDoc } from "firebase/firestore";
 
 dotenv.config();
 
