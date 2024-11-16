@@ -85,10 +85,10 @@ describe("Llama Flow", () => {
 
     // Assertions for Request
     expect(logEntry?.request?.prompt).toEqual(
-      "What's the weather in Ikorodu, Lagos?"
+      "What's the weather in Ikorodu, Lagos?",
     );
     expect(logEntry?.request?.model).toEqual(
-      "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo"
+      "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo",
     );
     expect(logEntry?.request?.temperature).toEqual(0.7);
     expect(logEntry?.request?.maxTokens).toEqual(512);
@@ -101,7 +101,7 @@ describe("Llama Flow", () => {
 
     // Assertions for Meta
     expect(logEntry?.meta?.operatingSystem).toEqual(
-      `${os.platform()}/${os.release()}`
+      `${os.platform()}/${os.release()}`,
     );
   }, 20000);
 });

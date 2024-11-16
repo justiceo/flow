@@ -82,12 +82,12 @@ export async function useChatGptApi(prompt: string) {
 describe("Flow", () => {
   it("should log prompts, requests, responses, function calls using live api", async () => {
     const logEntry = await useChatGptApi(
-      "What's the weather in Ikorodu, Lagos?"
+      "What's the weather in Ikorodu, Lagos?",
     );
 
     // Assertions for Request
     expect(logEntry?.request?.prompt).toEqual(
-      "What's the weather in Ikorodu, Lagos?"
+      "What's the weather in Ikorodu, Lagos?",
     );
     expect(logEntry?.request?.model).toEqual("gpt-4o-mini");
     expect(logEntry?.request?.temperature).toEqual(0.7);
@@ -102,7 +102,7 @@ describe("Flow", () => {
 
     // Assertions for Meta
     expect(logEntry?.meta?.operatingSystem).toEqual(
-      `${os.platform()}/${os.release()}`
+      `${os.platform()}/${os.release()}`,
     );
   }, 20000);
 });

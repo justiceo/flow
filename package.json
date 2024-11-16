@@ -4,7 +4,8 @@
   "description": "An AI logger and more",
   "main": "flow.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "format": "prettier . --write"
   },
   "type": "module",
   "keywords": [
@@ -21,6 +22,7 @@
   "devDependencies": {
     "@types/jest": "^29.5.13",
     "@types/node": "^22.7.5",
+    "prettier": "3.3.3",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2"
   },

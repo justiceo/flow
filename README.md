@@ -4,10 +4,15 @@ A simple API that enhances your LLM integration with automated logging, jest-lik
 
 ## High-level architecture
 
-* While in 'flow', collect logs in a buffer.
-* After the flow, process the logs to create a logEntry.
-* The logEntry may be saved to a log file or handle by other transports.
-* Transports could be google analytics, console, sentry, or returning to json (for tests).
+- While in 'flow', collect logs in a buffer.
+- After the flow, process the logs to create a logEntry.
+- The logEntry may be saved to a log file or handle by other transports.
+- Transports could be google analytics, console, sentry, or returning to json (for tests).
+
+## Development
+
+- Install [Prettier VS Code](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) for auto format-on-save.
+- Alternatively, execute `npm run format` to format files before submission.
 
 ### LogEntry Schema
 

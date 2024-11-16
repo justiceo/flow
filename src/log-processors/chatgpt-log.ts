@@ -1,6 +1,13 @@
-import os from 'os';
-import { machineIdSync } from 'node-machine-id';
-import { BufferEntry, LogEntryType, Request, Response, FunctionCall, Meta } from "../log-entry";
+import os from "os";
+import { machineIdSync } from "node-machine-id";
+import {
+  BufferEntry,
+  LogEntryType,
+  Request,
+  Response,
+  FunctionCall,
+  Meta,
+} from "../log-entry";
 import { getModelCost } from "../costs/cost";
 import { LogProcessor } from "./log-processor";
 
@@ -42,7 +49,9 @@ export class ChatGptLog implements LogProcessor {
     };
   }
 
-  async processFunctionCalls(buffer: Readonly<BufferEntry[]>): Promise<FunctionCall[]> {
+  async processFunctionCalls(
+    buffer: Readonly<BufferEntry[]>,
+  ): Promise<FunctionCall[]> {
     const functionCalls = buffer
       .filter((e) => e.type === LogEntryType.FUNCTION_CALL)
       .map((entry) => ({
@@ -58,12 +67,15 @@ export class ChatGptLog implements LogProcessor {
   }
 
   async processMeta(buffer: Readonly<BufferEntry[]>): Promise<Meta> {
-    const model = buffer.find((entry) => entry.type === LogEntryType.REQUEST)?.data?.model;
+    const model = buffer.find((entry) => entry.type === LogEntryType.REQUEST)
+      ?.data?.model;
     const modelCost = await getModelCost(model);
-    const tokenCount = buffer.find((entry) => entry.type === LogEntryType.RESPONSE)?.data?.usage.total_tokens;
+    const tokenCount = buffer.find(
+      (entry) => entry.type === LogEntryType.RESPONSE,
+    )?.data?.usage.total_tokens;
 
     return {
-      totalTokenCount:  tokenCount,
+      totalTokenCount: tokenCount,
       inputTokenCost1k: modelCost?.tokensInCost,
       outputTokenCost1k: modelCost?.tokensOutCost,
       triggerSource: "",
@@ -71,10 +83,10 @@ export class ChatGptLog implements LogProcessor {
       locale: Intl.DateTimeFormat().resolvedOptions().locale,
       userTimeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       operatingSystem: `${os.platform()}/${os.release()}`,
-      shell: os.userInfo().shell || 'Unknown',
+      shell: os.userInfo().shell || "Unknown",
       memory: 0,
       machineId: machineIdSync(),
-      env: process.env.NODE_ENV || 'development',
+      env: process.env.NODE_ENV || "development",
     };
   }
 }

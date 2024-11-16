@@ -1,6 +1,13 @@
-import os from 'os';
-import { machineIdSync } from 'node-machine-id';
-import { BufferEntry, Request, LogEntryType, Response, FunctionCall, Meta } from "../log-entry";
+import os from "os";
+import { machineIdSync } from "node-machine-id";
+import {
+  BufferEntry,
+  Request,
+  LogEntryType,
+  Response,
+  FunctionCall,
+  Meta,
+} from "../log-entry";
 import { getModelCost } from "../costs/cost";
 
 export class Llamalog {
@@ -53,14 +60,16 @@ export class Llamalog {
     return functionCalls;
   }
 
-
-  async processMeta(buffer: Readonly<BufferEntry[]>){
-    const model = buffer.find((entry) => entry.type === LogEntryType.REQUEST)?.data?.model;
+  async processMeta(buffer: Readonly<BufferEntry[]>) {
+    const model = buffer.find((entry) => entry.type === LogEntryType.REQUEST)
+      ?.data?.model;
     const modelCost = await getModelCost(model);
-    const tokenCount = buffer.find((entry) => entry.type === LogEntryType.RESPONSE)?.data?.usage.total_tokens;
+    const tokenCount = buffer.find(
+      (entry) => entry.type === LogEntryType.RESPONSE,
+    )?.data?.usage.total_tokens;
 
     return {
-      totalTokenCount:  tokenCount,
+      totalTokenCount: tokenCount,
       inputTokenCost1k: modelCost?.tokensInCost,
       outputTokenCost1k: modelCost?.tokensOutCost,
       triggerSource: "",
@@ -68,11 +77,11 @@ export class Llamalog {
       userId: "",
       country: "",
       operatingSystem: `${os.platform()}/${os.release()}`,
-      shell: os.userInfo().shell || 'Unknown',
+      shell: os.userInfo().shell || "Unknown",
       userTimeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       memory: 0,
       machineId: machineIdSync(),
-      env: process.env.NODE_ENV || 'development',
+      env: process.env.NODE_ENV || "development",
     };
   }
 }

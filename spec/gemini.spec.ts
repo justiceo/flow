@@ -93,12 +93,12 @@ export async function useGeminiApi(prompt: string) {
 describe("Gemini Flow", () => {
   it("should log prompts, requests, responses, function calls using live api", async () => {
     const logEntry = await useGeminiApi(
-      "What's the weather in Ikorodu, Lagos?"
+      "What's the weather in Ikorodu, Lagos?",
     );
 
     // Assertions for Request
     expect(logEntry?.request?.prompt).toEqual(
-      "What's the weather in Ikorodu, Lagos?"
+      "What's the weather in Ikorodu, Lagos?",
     );
     expect(logEntry?.request?.model).toEqual("models/gemini-1.5-pro");
     expect(logEntry?.request?.temperature).toEqual(1.0);
@@ -112,7 +112,7 @@ describe("Gemini Flow", () => {
 
     // Assertions for Meta
     expect(logEntry?.meta?.operatingSystem).toEqual(
-      `${os.platform()}/${os.release()}`
+      `${os.platform()}/${os.release()}`,
     );
   }, 20000);
 });

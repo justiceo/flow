@@ -79,19 +79,17 @@ class Flow {
   }
 
   private async createLogEntry(
-    readonlyBuffer: Readonly<BufferEntry[]>
+    readonlyBuffer: Readonly<BufferEntry[]>,
   ): Promise<LogEntry> {
     const modelFamily = this.getModelFamily(readonlyBuffer);
     return {
       requestId: this.currentRequestId,
       sessionId: this.sessionId,
       request: await this.handlers[modelFamily].processRequest(readonlyBuffer),
-      response: await this.handlers[modelFamily].processResponse(
-        readonlyBuffer
-      ),
-      functionCalls: await this.handlers[modelFamily].processFunctionCalls(
-        readonlyBuffer
-      ),
+      response:
+        await this.handlers[modelFamily].processResponse(readonlyBuffer),
+      functionCalls:
+        await this.handlers[modelFamily].processFunctionCalls(readonlyBuffer),
       meta: await this.handlers[modelFamily].processMeta(readonlyBuffer),
     };
   }
