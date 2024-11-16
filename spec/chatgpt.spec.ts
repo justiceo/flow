@@ -4,105 +4,188 @@ import dotenv from "dotenv";
 import { ChatCompletionCreateParamsNonStreaming } from "openai/resources/chat/completions";
 import { flow } from "../src/flow";
 
-dotenv.config();
+describe("ChatGPT Flow", () => {
+  let openai: OpenAI;
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY as string,
+  beforeAll(() => {
+    dotenv.config();
+  });
+
+  beforeEach(() => {
+    openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY as string,
+    });
+  });
+
+  it("should process a simple request", async () => {
+    const TestPrompt = "In which continent is Nigeria?";
+    flow.logPrompt(TestPrompt, "user-input");
+
+    const request = createRequest(TestPrompt, []);
+    flow.logRequest(request);
+
+    const response = await openai.chat.completions.create(request);
+    flow.logResponse(response);
+
+    const logEntry = await flow.flushLogs(NO_OP_TRANSPORT);
+
+    // Assertions for Request
+    expect(logEntry?.request).toEqual({
+      prompt: TestPrompt,
+      model: "gpt-4o-mini",
+      temperature: TestTemperature,
+      topP: TestTopP,
+      maxTokens: TestMaxTokens,
+      errorReason: "",
+      functionCalls: undefined,
+      outputMode: undefined,
+      systemPrompt: undefined,
+      tokenCount: undefined,
+      topK: undefined,
+    });
+
+    // Assertions for Response
+    expect(logEntry?.response).toEqual({
+      status: 200,
+      finishReason: "stop",
+      text: expect.stringContaining("Africa"),
+      tokenCount: expect.any(Number),
+      errorReason: "",
+      // TODO: Add startTime and endTime.
+    });
+
+    // Assertions for Function Call
+    expect(logEntry?.functionCalls).toEqual([]);
+
+    // Assertions for Meta
+    expect(logEntry?.meta).toMatchObject({
+      env: "test",
+      shell: "/bin/zsh",
+      operatingSystem: `${os.platform()}/${os.release()}`,
+      // TODO: Add more fields and switch toMatchObject to toEqual.
+    });
+  }, 20000);
+
+  it("should process prompt with function call", async () => {
+    const TestPrompt = "What's the weather in Ikorodu, Lagos?";
+    flow.logPrompt(TestPrompt, "user-input");
+
+    const request = createRequest(TestPrompt, [TEST_WEATHER_FUNC_SCHEMA]);
+    flow.logRequest(request);
+
+    const response = await openai.chat.completions.create(request);
+    flow.logResponse(response);
+
+    if (response.choices[0]?.message?.function_call) {
+      flow.logFunctionCall(response.choices[0]?.message?.function_call);
+    }
+
+    const logEntry = await flow.flushLogs(NO_OP_TRANSPORT);
+
+    // Assertions for Request
+    expect(logEntry?.request).toEqual({
+      prompt: TestPrompt,
+      model: "gpt-4o-mini",
+      temperature: TestTemperature,
+      topP: TestTopP,
+      maxTokens: TestMaxTokens,
+      errorReason: "",
+      functionCalls: [TEST_WEATHER_FUNC_SCHEMA],
+      outputMode: undefined,
+      systemPrompt: undefined,
+      tokenCount: undefined,
+      topK: undefined,
+    });
+
+    // Assertions for Response
+    expect(logEntry?.response).toEqual({
+      status: 200,
+      finishReason: "function_call",
+      text: null,
+      tokenCount: expect.any(Number),
+      errorReason: "",
+      // TODO: Add startTime and endTime.
+    });
+
+    // Assertions for Function Call
+    expect(logEntry?.functionCalls).toEqual([
+      {
+        name: "TEST_WEATHER_FUNC_IMPL",
+        args: undefined,
+        exitCode: undefined,
+        startTime: undefined,
+        endTime: undefined,
+        result: undefined,
+        // TODO: Process these fields.
+      },
+    ]);
+
+    // Assertions for Meta
+    expect(logEntry?.meta).toMatchObject({
+      env: "test",
+      shell: "/bin/zsh",
+      operatingSystem: `${os.platform()}/${os.release()}`,
+      // TODO: Add more fields and switch toMatchObject to toEqual.
+    });
+  }, 20000);
+
+  it("should process request with failure", async () => {
+    // E.g. by setting TestTopP to value > 1.
+  });
+
+  it("should process request without a response", async () => {
+    // Simply flush logs without calling OpenAI API.
+  });
+
+  it("should process prompt without a request", async () => {
+    // By flushing after only logging a prompt.
+  });
+
+  it("should process request and response containing func call, even if func call is not executed", async () => {});
+
+  it("should process a response that results in multiple parallel function calls", async () => {});
+
+  it("should process a response that has both text and function call", async () => {});
 });
 
-// Demo function to simulate a weather API call
-async function getWeather(location: string) {
+///// Test Helpers /////
+
+const TEST_WEATHER_FUNC_IMPL = (location: string) => {
   const weatherData = {
     location: location,
     temperature: "22°C",
     condition: "Sunny",
   };
   return weatherData;
-}
+};
 
-export async function useChatGptApi(prompt: string) {
-  flow.logPrompt(prompt, "user-input");
+const TEST_WEATHER_FUNC_SCHEMA = {
+  name: "TEST_WEATHER_FUNC_IMPL",
+  description: "Gets the weather information for a location",
+  parameters: {
+    type: "object",
+    properties: {
+      location: {
+        type: "string",
+        description: "The name of the city to get the weather for",
+      },
+    },
+    required: ["location"],
+  },
+};
 
-  const requestData: ChatCompletionCreateParamsNonStreaming = {
+let TestTemperature = 0.7;
+let TestTopP = 0.3;
+let TestMaxTokens = 150;
+const createRequest = (prompt: string, functions: any[]) => {
+  return {
     model: "gpt-4o-mini",
     messages: [{ role: "user", content: prompt }],
-    max_tokens: 150,
-    temperature: 0.7,
-    top_p: 0,
-    functions: [
-      {
-        name: "getWeather",
-        description: "Gets the weather information for a location",
-        parameters: {
-          type: "object",
-          properties: {
-            location: {
-              type: "string",
-              description: "The name of the city to get the weather for",
-            },
-          },
-          required: ["location"],
-        },
-      },
-    ],
-  };
+    max_tokens: TestMaxTokens,
+    temperature: TestTemperature,
+    top_p: TestTopP,
+    ...(functions.length > 0 && { functions: functions }),
+  } as ChatCompletionCreateParamsNonStreaming;
+};
 
-  flow.logRequest(requestData);
-
-  try {
-    const aiResponse: any = await openai.chat.completions.create(requestData);
-
-    flow.logResponse(aiResponse);
-
-    // Handle function call if present
-    const functionCall = aiResponse.choices[0]?.message?.function_call;
-    if (functionCall && functionCall.name === "getWeather") {
-      try {
-        const args = JSON.parse(functionCall.arguments);
-        const weatherData = await getWeather(args.location);
-        flow.logFunctionCall({ ...functionCall, result: weatherData });
-        // console.log(`Weather Data for ${args.location}:`, weatherData);
-      } catch (parseError) {
-        console.error("Error parsing function call arguments:", parseError);
-      }
-    }
-
-    const logEntry = await flow.flushLogs();
-
-    return logEntry;
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      flow.logError(error);
-    } else {
-      console.error("Unexpected error", error);
-    }
-  }
-}
-
-describe("Flow", () => {
-  it("should log prompts, requests, responses, function calls using live api", async () => {
-    const logEntry = await useChatGptApi(
-      "What's the weather in Ikorodu, Lagos?",
-    );
-
-    // Assertions for Request
-    expect(logEntry?.request?.prompt).toEqual(
-      "What's the weather in Ikorodu, Lagos?",
-    );
-    expect(logEntry?.request?.model).toEqual("gpt-4o-mini");
-    expect(logEntry?.request?.temperature).toEqual(0.7);
-    expect(logEntry?.request?.maxTokens).toEqual(150);
-    expect(logEntry?.request?.topP).toEqual(0);
-
-    // Assertions for Response
-    expect(logEntry?.response?.status).toEqual(200);
-
-    // Assertions for Function Call
-    expect(logEntry?.functionCalls?.[0]?.name).toEqual("getWeather");
-
-    // Assertions for Meta
-    expect(logEntry?.meta?.operatingSystem).toEqual(
-      `${os.platform()}/${os.release()}`,
-    );
-  }, 20000);
-});
+const NO_OP_TRANSPORT = () => {};

@@ -2,6 +2,9 @@ export enum LogEntryType {
   PROMPT,
   REQUEST,
   RESPONSE,
+
+  // TODO: Repurpose FUNCTION_CALL to FUNCTION_CALL_RESULT (for logging the result of calling the function),
+  // The original FUNCTION_CALL arguments would have been logged in RESPONSE entry.
   FUNCTION_CALL,
   CUSTOM,
   ERROR,

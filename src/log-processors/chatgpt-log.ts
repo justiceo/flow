@@ -39,7 +39,7 @@ export class ChatGptLog implements LogProcessor {
     const response = buffer.find((e) => e.type === LogEntryType.RESPONSE);
 
     return {
-      text: response?.data?.choices[0].content,
+      text: response?.data?.choices[0].message.content,
       finishReason: response?.data?.choices[0].finish_reason,
       tokenCount: response?.data?.usage.total_tokens,
       status: 200,
