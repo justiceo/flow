@@ -1,11 +1,6 @@
-// System packages
-import os from 'os';
-
-// Third-party libraries
+import os from "os";
 import dotenv from "dotenv";
 import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
-
-// Local dependencies
 import { flow } from "../src/flow";
 
 dotenv.config();
@@ -115,7 +110,9 @@ describe("Gemini Flow", () => {
     // Assertions for Function Call
     expect(logEntry?.functionCalls?.[0]?.name).toEqual("getWeather");
 
-     // Assertions for Meta
-     expect(logEntry?.meta?.operatingSystem).toEqual(`${os.platform()}/${os.release()}`)
+    // Assertions for Meta
+    expect(logEntry?.meta?.operatingSystem).toEqual(
+      `${os.platform()}/${os.release()}`
+    );
   }, 20000);
 });

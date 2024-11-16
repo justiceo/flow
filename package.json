@@ -4,8 +4,7 @@
   "description": "An AI logger and more",
   "main": "flow.js",
   "scripts": {
-    "test": "jest",
-    "start": "node --loader ts-node/esm --experimental-specifier-resolution=node src/index.ts"
+    "test": "jest"
   },
   "type": "module",
   "keywords": [

@@ -1,12 +1,7 @@
-// System packages
-import os from 'os';
-
-// Third-party libraries
+import os from "os";
 import OpenAI from "openai";
 import dotenv from "dotenv";
 import { ChatCompletionCreateParamsNonStreaming } from "openai/resources/chat/completions";
-
-// Local dependencies
 import { flow } from "../src/flow";
 
 dotenv.config();
@@ -57,8 +52,6 @@ export async function useChatGptApi(prompt: string) {
   try {
     const aiResponse: any = await openai.chat.completions.create(requestData);
 
-    
-
     flow.logResponse(aiResponse);
 
     // Handle function call if present
@@ -87,7 +80,6 @@ export async function useChatGptApi(prompt: string) {
 }
 
 describe("Flow", () => {
-
   it("should log prompts, requests, responses, function calls using live api", async () => {
     const logEntry = await useChatGptApi(
       "What's the weather in Ikorodu, Lagos?"
@@ -109,6 +101,8 @@ describe("Flow", () => {
     expect(logEntry?.functionCalls?.[0]?.name).toEqual("getWeather");
 
     // Assertions for Meta
-    expect(logEntry?.meta?.operatingSystem).toEqual(`${os.platform()}/${os.release()}`)
+    expect(logEntry?.meta?.operatingSystem).toEqual(
+      `${os.platform()}/${os.release()}`
+    );
   }, 20000);
 });
