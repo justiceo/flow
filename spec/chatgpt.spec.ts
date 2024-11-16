@@ -62,7 +62,7 @@ describe("ChatGPT Flow", () => {
       env: "test",
       shell: "/bin/zsh",
       operatingSystem: `${os.platform()}/${os.release()}`,
-      // TODO: Add more fields and switch toMatchObject to toEqual.
+      // TODO: Add more fields and switch from toMatchObject to toEqual.
     });
   }, 20000);
 
@@ -141,11 +141,33 @@ describe("ChatGPT Flow", () => {
     // By flushing after only logging a prompt.
   });
 
+  it("should set request and session IDs for a conversation", async () => {});
+
   it("should process request and response containing func call, even if func call is not executed", async () => {});
 
   it("should process a response that results in multiple parallel function calls", async () => {});
 
   it("should process a response that has both text and function call", async () => {});
+
+  it("should return multiple log entries in a multi-turn conversation", async () => {});
+
+  it("should support streaming responses", async () => {});
+
+  it("should support custom logs transport", async () => {});
+
+  it("should work with OpenAI's vision models", async () => {});
+
+  it("should work with OpenAI's embedding models", async () => {});
+
+  it("should work with OpenAI's assistant API", async () => {});
+
+  it("should compute latency between prompt, request and response", async () => {});
+
+  it("should compute additional latency metrics for function calls", async () => {});
+
+  it("should compute additional latency metrics for streaming responses", async () => {});
+
+  it("should compute cost of each request", async () => {});
 });
 
 ///// Test Helpers /////
