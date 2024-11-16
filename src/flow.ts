@@ -18,10 +18,11 @@ class Flow {
   private sessionId: string | undefined = undefined;
   private currentRequestId: string | undefined = undefined;
   private static instance: Flow | null = null;
-  private handlers: { [key: string]: LogProcessor } = {
-    chatgpt: new ChatGptLog(),
+  private defaultHandler: LogProcessor = new ChatGptLog();
+  private handlers: LogProcessor[] = [
+    this.defaultHandler,
     // TODO: Add Gemini and Llama after updating their log processors.
-  };
+  ];
 
   static getInstance(): Flow {
     if (!Flow.instance) {
@@ -79,35 +80,26 @@ class Flow {
   }
 
   private async createLogEntry(
-    readonlyBuffer: Readonly<BufferEntry[]>,
+    buffer: Readonly<BufferEntry[]>,
   ): Promise<LogEntry> {
-    const modelFamily = this.getModelFamily(readonlyBuffer);
+    let handler = this.defaultHandler;
+    const request = buffer.find((e) => e.type === LogEntryType.REQUEST);
+    if (request) {
+      const appropriateHandler = this.handlers.find((h) =>
+        h.canHandleRequest(request),
+      );
+      if (appropriateHandler) {
+        handler = appropriateHandler;
+      }
+    }
     return {
       requestId: this.currentRequestId,
       sessionId: this.sessionId,
-      request: await this.handlers[modelFamily].processRequest(readonlyBuffer),
-      response:
-        await this.handlers[modelFamily].processResponse(readonlyBuffer),
-      functionCalls:
-        await this.handlers[modelFamily].processFunctionCalls(readonlyBuffer),
-      meta: await this.handlers[modelFamily].processMeta(readonlyBuffer),
+      request: await handler.processRequest(buffer),
+      response: await handler.processResponse(buffer),
+      functionCalls: await handler.processFunctionCalls(buffer),
+      meta: await handler.processMeta(buffer),
     };
-  }
-
-  private getModelFamily(buffer: Readonly<BufferEntry[]>): string {
-    const entry = buffer.find((e) => e.type === LogEntryType.REQUEST);
-    if (!entry) {
-      // The request was not made.
-      return "chatgpt"; // Default to chatgpt
-    }
-    if (entry.data?.model?.includes("gemini")) {
-      return "gemini";
-    } else if (entry.data?.model?.includes("claude")) {
-      return "claude";
-    } else if (entry.data?.model?.includes("gpt")) {
-      return "chatgpt";
-    }
-    return "chatgpt"; // Default fallback
   }
 
   async flushLogs(transport?: (logEntry: LogEntry) => void): Promise<any> {
