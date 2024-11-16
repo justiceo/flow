@@ -1,28 +1,28 @@
-// System packages
 import fs from "fs/promises";
 import path from "path";
-
-// Local dependencies
-import { LogEntryType } from "./const";
-import { ChatGptLog } from "./chatgpt-log";
-import { GeminiLog } from "./gemini-log";
-import { Llamalog } from "./llama-log";
-import { LogEntry, BufferEntry, Request, Response, FunctionCall, Meta } from "./log-entry";
-
+import { ChatGptLog } from "./log-processors/chatgpt-log";
+import { GeminiLog } from "./log-processors/gemini-log";
+import {
+  LogEntry,
+  BufferEntry,
+  LogEntryType,
+  Request,
+  Response,
+  FunctionCall,
+  Meta,
+} from "./log-entry";
+import { LogProcessor } from "./log-processors/log-processor";
 
 class Flow {
   private buffer: BufferEntry[] = [];
   private sessionId: string | undefined = undefined;
   private currentRequestId: string | undefined = undefined;
   private static instance: Flow | null = null;
-  private handlers: { [key: string]: ChatGptLog | GeminiLog | Llamalog } = {
+  private handlers: { [key: string]: LogProcessor } = {
     chatgpt: new ChatGptLog(),
-    gemini: new GeminiLog(),
-    llama: new Llamalog(),
+    // TODO: Add Gemini and Llama after updating their log processors.
   };
 
-
-  // Singleton pattern to get instance
   static getInstance(): Flow {
     if (!Flow.instance) {
       Flow.instance = new Flow();
@@ -36,57 +36,37 @@ class Flow {
   }
 
   logPrompt(prompt: string, trigger: string): void {
-    // This is the beginning of a new request.
+    // This is the beginning of a new request, clear buffer.
     this.buffer = [];
     this.currentRequestId = this.generateUniqueId();
     if (!this.sessionId) {
       this.sessionId = this.currentRequestId;
     }
 
-    this.buffer.push({
-      type: LogEntryType.PROMPT,
-      timestamp: new Date().toISOString(),
-      data: { prompt, trigger },
-    } );
+    this.log(LogEntryType.PROMPT, { prompt, trigger });
   }
 
   logRequest(requestData: any): void {
-    this.buffer.push({
-      type: LogEntryType.REQUEST,
-      timestamp: new Date().toISOString(),
-      data: requestData,
-    });
+    this.log(LogEntryType.REQUEST, requestData);
   }
 
   logResponse(responseData: any): void {
-    this.buffer.push({
-      type: LogEntryType.RESPONSE,
-      timestamp: new Date().toISOString(),
-      data: responseData,
-    });
+    this.log(LogEntryType.RESPONSE, responseData);
   }
 
   logFunctionCall(functionCallData: any): void {
-    this.buffer.push({
-      type: LogEntryType.FUNCTION_CALL,
-      timestamp: new Date().toISOString(),
-      data: functionCallData,
-    });
-  }
-
-  log(key: string, data: any ): void {
-    this.buffer.push({
-      type: LogEntryType.CUSTOM,
-      timestamp: new Date().toISOString(),
-      data: { key, data },
-    });
+    this.log(LogEntryType.FUNCTION_CALL, functionCallData);
   }
 
   logError(error: Error): void {
+    this.log(LogEntryType.ERROR, { error: error.message, stack: error.stack });
+  }
+
+  log(key: string | LogEntryType, data: any): void {
     this.buffer.push({
-      type: LogEntryType.ERROR,
+      type: key as unknown as LogEntryType,
       timestamp: new Date().toISOString(),
-      data: { error: error.message, stack: error.stack },
+      data: data,
     });
   }
 
@@ -98,17 +78,22 @@ class Flow {
     return this.currentRequestId;
   }
 
-  private async createLogEntry(readonlyBuffer: Readonly<BufferEntry[]>){
+  private async createLogEntry(
+    readonlyBuffer: Readonly<BufferEntry[]>
+  ): Promise<LogEntry> {
     const modelFamily = this.getModelFamily(readonlyBuffer);
-    const logEntry = {
+    return {
       requestId: this.currentRequestId,
       sessionId: this.sessionId,
-      request: this.handlers[modelFamily].processRequest(readonlyBuffer),
-      response: this.handlers[modelFamily].processResponse(readonlyBuffer),
-      functionCalls: this.handlers[modelFamily].processFunctionCalls(readonlyBuffer),
+      request: await this.handlers[modelFamily].processRequest(readonlyBuffer),
+      response: await this.handlers[modelFamily].processResponse(
+        readonlyBuffer
+      ),
+      functionCalls: await this.handlers[modelFamily].processFunctionCalls(
+        readonlyBuffer
+      ),
       meta: await this.handlers[modelFamily].processMeta(readonlyBuffer),
     };
-    return logEntry;
   }
 
   private getModelFamily(buffer: Readonly<BufferEntry[]>): string {
@@ -123,8 +108,6 @@ class Flow {
       return "claude";
     } else if (entry.data?.model?.includes("gpt")) {
       return "chatgpt";
-    } else if (entry.data?.model?.includes("llama")) {
-      return "llama";
     }
     return "chatgpt"; // Default fallback
   }
@@ -134,16 +117,18 @@ class Flow {
       return;
     }
 
-    const readonlyBuffer: Readonly<BufferEntry[]> = Object.freeze([...this.buffer]);
+    const readonlyBuffer: Readonly<BufferEntry[]> = Object.freeze([
+      ...this.buffer,
+    ]);
     const logEntry = await this.createLogEntry(readonlyBuffer);
 
-    if (transport) { 
-      transport(logEntry); 
-    } else { 
-      const logFileName = `${new Date().toISOString().split("T")[0]}.jsonl`; 
-      const logFilePath = path.join("./data", logFileName); 
+    if (transport) {
+      transport(logEntry);
+    } else {
+      const logFileName = `${new Date().toISOString().split("T")[0]}.jsonl`;
+      const logFilePath = path.join("./data", logFileName);
 
-      await fs.appendFile(logFilePath, JSON.stringify(logEntry) + "\n"); 
+      await fs.appendFile(logFilePath, JSON.stringify(logEntry) + "\n");
     }
     this.buffer = [];
 

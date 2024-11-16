@@ -1,14 +1,9 @@
-// System packages
 import os from 'os';
-
-// Third-party libraries
 import { machineIdSync } from 'node-machine-id';
+import { BufferEntry, Request, LogEntryType, Response, FunctionCall, Meta } from "../log-entry";
+import { getModelCost } from "../costs/cost";
 
-// Local dependencies
-import { LogEntryType } from "./const";
-import { BufferEntry, Request, Response, FunctionCall, Meta } from "./log-entry";
-import { getModelCost } from "./cost";
-export class ChatGptLog {
+export class Llamalog {
   processRequest(buffer: Readonly<BufferEntry[]>): Request | {} {
     const prompt = buffer.find((e) => e.type === LogEntryType.PROMPT);
     const request = buffer.find((e) => e.type === LogEntryType.REQUEST);
@@ -20,7 +15,7 @@ export class ChatGptLog {
       temperature: request?.data?.temperature,
       topK: request?.data?.top_k,
       topP: request?.data?.top_p,
-      functionCalls: request?.data?.functions,
+      functionCalls: request?.data?.tools,
       maxTokens: request?.data?.max_tokens,
       tokenCount: request?.data?.systemPrompt?.split("").length,
       errorReason: "",
@@ -32,10 +27,10 @@ export class ChatGptLog {
     const response = buffer.find((e) => e.type === LogEntryType.RESPONSE);
 
     return {
-      text: response?.data?.choices[0].content,
+      text: response?.data?.choices[0].message.content,
       finishReason: response?.data?.choices[0].finish_reason,
       completionTime: response?.timestamp,
-      tokenCount: response?.data?.usage.total_tokens,
+      tokenCount: response?.data?.usage?.total_tokens,
       status: 200,
       startTime: response?.data?.start_time,
       endTime: response?.data?.end_time,
@@ -48,7 +43,7 @@ export class ChatGptLog {
       .filter((e) => e.type === LogEntryType.FUNCTION_CALL)
       .map((entry) => ({
         name: entry?.data?.name,
-        args: entry?.data?.args,
+        args: entry?.data?.arguments,
         exitCode: entry?.data?.exitCode,
         startTime: entry?.data?.start_time,
         endTime: entry?.data?.end_time,

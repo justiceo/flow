@@ -1,13 +1,7 @@
-// System packages
 import os from 'os';
-
-// Third-party libraries
 import { machineIdSync } from 'node-machine-id';
-
-// Local dependencies
-import { LogEntryType } from "./const";
-import { BufferEntry, Request, Response, FunctionCall, Meta } from "./log-entry";
-import { getModelCost } from "./cost";
+import { BufferEntry,LogEntryType, Request, Response, FunctionCall, Meta } from "../log-entry";
+import { getModelCost } from "../costs/cost";
 ;
 
 export class GeminiLog {

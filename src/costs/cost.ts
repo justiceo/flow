@@ -2,7 +2,7 @@ import fs from 'fs/promises';
 
 export async function getModelCost(modelName: string) {
     try {
-        const data = await fs.readFile('./costs/model-costs.json', 'utf-8');
+        const data = await fs.readFile('./src/costs/model-costs.json', 'utf-8');
         const models = JSON.parse(data);
         
         for (const modelData of models) {
@@ -21,7 +21,3 @@ export async function getModelCost(modelName: string) {
         return null;
     }
 }
-
-(async () => {
-    console.log(await getModelCost('claude-3.5-sonnet (june)'));
-})();
