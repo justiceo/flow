@@ -1,25 +1,29 @@
 import fs from "fs/promises";
 import path from "path";
-import os from "os";
-import { LogEntryType } from "./const";
-import { ChatGptLog } from "./chatgpt-log";
-import { GeminiLog } from "./gemini-log";
-import { LogEntry, BufferEntry, Request, Response, FunctionCall, Meta } from "./log-entry";
+import { ChatGptLog } from "./log-processors/chatgpt-log";
+import { GeminiLog } from "./log-processors/gemini-log";
+import {
+  LogEntry,
+  BufferEntry,
+  LogEntryType,
+  Request,
+  Response,
+  FunctionCall,
+  Meta,
+} from "./log-entry";
+import { LogProcessor } from "./log-processors/log-processor";
 
-
-// Class definition
 class Flow {
   private buffer: BufferEntry[] = [];
   private sessionId: string | undefined = undefined;
   private currentRequestId: string | undefined = undefined;
   private static instance: Flow | null = null;
-  private handlers: { [key: string]: ChatGptLog | GeminiLog } = {
-    chatgpt: new ChatGptLog(),
-    gemini: new GeminiLog(),
-  };
+  private defaultHandler: LogProcessor = new ChatGptLog();
+  private handlers: LogProcessor[] = [
+    this.defaultHandler,
+    // TODO: Add Gemini and Llama after updating their log processors.
+  ];
 
-
-  // Singleton pattern to get instance
   static getInstance(): Flow {
     if (!Flow.instance) {
       Flow.instance = new Flow();
@@ -33,57 +37,37 @@ class Flow {
   }
 
   logPrompt(prompt: string, trigger: string): void {
-    // This is the beginning of a new request.
+    // This is the beginning of a new request, clear buffer.
     this.buffer = [];
     this.currentRequestId = this.generateUniqueId();
     if (!this.sessionId) {
       this.sessionId = this.currentRequestId;
     }
 
-    this.buffer.push({
-      type: LogEntryType.PROMPT,
-      timestamp: new Date().toISOString(),
-      data: { prompt, trigger },
-    } );
+    this.log(LogEntryType.PROMPT, { prompt, trigger });
   }
 
   logRequest(requestData: any): void {
-    this.buffer.push({
-      type: LogEntryType.REQUEST,
-      timestamp: new Date().toISOString(),
-      data: requestData,
-    });
+    this.log(LogEntryType.REQUEST, requestData);
   }
 
   logResponse(responseData: any): void {
-    this.buffer.push({
-      type: LogEntryType.RESPONSE,
-      timestamp: new Date().toISOString(),
-      data: responseData,
-    });
+    this.log(LogEntryType.RESPONSE, responseData);
   }
 
   logFunctionCall(functionCallData: any): void {
-    this.buffer.push({
-      type: LogEntryType.FUNCTION_CALL,
-      timestamp: new Date().toISOString(),
-      data: functionCallData,
-    });
-  }
-
-  log(key: string, data: any ): void {
-    this.buffer.push({
-      type: LogEntryType.CUSTOM,
-      timestamp: new Date().toISOString(),
-      data: { key, data },
-    });
+    this.log(LogEntryType.FUNCTION_CALL, functionCallData);
   }
 
   logError(error: Error): void {
+    this.log(LogEntryType.ERROR, { error: error.message, stack: error.stack });
+  }
+
+  log(key: string | LogEntryType, data: any): void {
     this.buffer.push({
-      type: LogEntryType.ERROR,
+      type: key as unknown as LogEntryType,
       timestamp: new Date().toISOString(),
-      data: { error: error.message, stack: error.stack },
+      data: data,
     });
   }
 
@@ -95,33 +79,27 @@ class Flow {
     return this.currentRequestId;
   }
 
-  private createLogEntry(readonlyBuffer: Readonly<BufferEntry[]>): LogEntry {
-    const modelFamily = this.getModelFamily(readonlyBuffer);
-    const logEntry = {
+  private async createLogEntry(
+    buffer: Readonly<BufferEntry[]>,
+  ): Promise<LogEntry> {
+    let handler = this.defaultHandler;
+    const request = buffer.find((e) => e.type === LogEntryType.REQUEST);
+    if (request) {
+      const appropriateHandler = this.handlers.find((h) =>
+        h.canHandleRequest(request),
+      );
+      if (appropriateHandler) {
+        handler = appropriateHandler;
+      }
+    }
+    return {
       requestId: this.currentRequestId,
       sessionId: this.sessionId,
-      request: this.handlers[modelFamily].processRequest(readonlyBuffer),
-      response: this.handlers[modelFamily].processResponse(readonlyBuffer),
-      functionCalls: this.handlers[modelFamily].processFunctionCalls(readonlyBuffer),
-      meta: this.handlers[modelFamily].processMeta(readonlyBuffer),
+      request: await handler.processRequest(buffer),
+      response: await handler.processResponse(buffer),
+      functionCalls: await handler.processFunctionCalls(buffer),
+      meta: await handler.processMeta(buffer),
     };
-    return logEntry;
-  }
-
-  private getModelFamily(buffer: Readonly<BufferEntry[]>): string {
-    const entry = buffer.find((e) => e.type === LogEntryType.REQUEST);
-    if (!entry) {
-      // The request was not made.
-      return "chatgpt"; // Default to chatgpt
-    }
-    if (entry.data?.model?.includes("gemini")) {
-      return "gemini";
-    } else if (entry.data?.model?.includes("claude")) {
-      return "claude";
-    } else if (entry.data?.model?.includes("gpt")) {
-      return "chatgpt";
-    }
-    return "chatgpt"; // Default fallback
   }
 
   async flushLogs(transport?: (logEntry: LogEntry) => void): Promise<any> {
@@ -129,16 +107,18 @@ class Flow {
       return;
     }
 
-    const readonlyBuffer: Readonly<BufferEntry[]> = Object.freeze([...this.buffer]);
-    const logEntry = this.createLogEntry(readonlyBuffer);
+    const readonlyBuffer: Readonly<BufferEntry[]> = Object.freeze([
+      ...this.buffer,
+    ]);
+    const logEntry = await this.createLogEntry(readonlyBuffer);
 
-    if (transport) { 
-      transport(logEntry); 
-    } else { 
-      const logFileName = `${new Date().toISOString().split("T")[0]}.jsonl`; 
-      const logFilePath = path.join("./data", logFileName); 
+    if (transport) {
+      transport(logEntry);
+    } else {
+      const logFileName = `${new Date().toISOString().split("T")[0]}.jsonl`;
+      const logFilePath = path.join("./data", logFileName);
 
-      await fs.appendFile(logFilePath, JSON.stringify(logEntry) + "\n"); 
+      await fs.appendFile(logFilePath, JSON.stringify(logEntry) + "\n");
     }
     this.buffer = [];
 

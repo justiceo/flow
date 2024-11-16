@@ -1,4 +1,15 @@
-import { LogEntryType } from "./const";
+export enum LogEntryType {
+  PROMPT,
+  REQUEST,
+  RESPONSE,
+
+  // TODO: Repurpose FUNCTION_CALL to FUNCTION_CALL_RESULT (for logging the result of calling the function),
+  // The original FUNCTION_CALL arguments would have been logged in RESPONSE entry.
+  FUNCTION_CALL,
+  CUSTOM,
+  ERROR,
+}
+
 /**
  * Represents the request information in a log entry.
  */
@@ -6,22 +17,25 @@ export interface Request {
   /** The prompt text */
   prompt?: string;
 
-  /** [Optional] The system prompt */
+  /** The system prompt */
   systemPrompt?: string;
 
   /** The ID of the model used */
   model?: string;
 
   /** The family of the model used */
-  modelFamily?: string;
+  modelFamily?: ModelFamily;
 
-  /** The temperature setting for the request */
+  /** The temperature value for the request */
   temperature?: number;
 
-  /** The topK setting for the request */
+  /** The topK value for the request */
   topK?: number;
 
-  /** [Optional] The function calls available for the model */
+  /** The topP value for the request */
+  topP?: number;
+
+  /** The function calls available for the model */
   functionCalls?: string[];
 
   /** The maximum number of tokens for the response */
@@ -30,10 +44,11 @@ export interface Request {
   /** The number of tokens in the request */
   tokenCount?: number;
 
-  /** [Optional] The reason for any error in the request */
+  /** The reason for any error in the request */
   errorReason?: string;
-  
-  topP?: number;
+
+  /** The output mode (e.g., "streaming", "json", "csv") */
+  outputMode?: string;
 }
 
 /**
@@ -46,8 +61,11 @@ export interface Response {
   /** The status of the response */
   status?: number;
 
-  /** [Optional] The reason for any error in the response */
+  /** The reason for any error in the response */
   errorReason?: string;
+
+  /** The reason content-generation stopped. */
+  finishReason?: string;
 
   /** The number of tokens in the response */
   tokenCount?: number;
@@ -104,11 +122,11 @@ export interface Meta {
   /** The output mode (e.g., "streaming", "schema") */
   outputMode?: string;
 
-  /** [Optional] The ID of the user */
+  /** The ID of the user */
   userId?: string;
 
-  /** The country of the user */
-  country?: string;
+  /** The locale of the user */
+  locale?: string;
 
   /** The operating system of the user */
   operatingSystem?: string;
@@ -164,4 +182,13 @@ export interface BufferEntry {
 
   /** The actual data of the entry, which can be a request, response, function call, or any other type */
   data: any;
+}
+
+export enum ModelFamily {
+  GEMINI = "gemini",
+  CHATGPT = "chatgpt",
+  CLAUDE = "claude",
+  GROK = "grok",
+  LLAMA = "llama",
+  OTHER = "other",
 }
