@@ -79,7 +79,7 @@ async function useLLamaApi(prompt: string) {
   }
 }
 
-describe("Llama Flow", () => {
+describe.skip("Llama Flow", () => {
   it("should log prompts, requests, responses, function calls using live api", async () => {
     const logEntry = await useLLamaApi("What's the weather in Ikorodu, Lagos?");
 

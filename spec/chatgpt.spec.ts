@@ -27,7 +27,7 @@ describe("ChatGPT Flow", () => {
     const response = await openai.chat.completions.create(request);
     flow.logResponse(response);
 
-    const logEntry = await flow.flushLogs(NO_OP_TRANSPORT);
+    const logEntry = await flow.flushLogs();
 
     // Assertions for Request
     expect(logEntry?.request).toEqual({
@@ -58,11 +58,19 @@ describe("ChatGPT Flow", () => {
     expect(logEntry?.functionCalls).toEqual([]);
 
     // Assertions for Meta
-    expect(logEntry?.meta).toMatchObject({
-      env: "test",
-      shell: "/bin/zsh",
+    expect(logEntry?.meta).toEqual({
+      totalTokenCount: expect.any(Number),
+      inputTokenCost1k: expect.any(Number),
+      outputTokenCost1k: expect.any(Number),
+      triggerSource: "",
+      userId: "",
+      locale: Intl.DateTimeFormat().resolvedOptions().locale,
+      userTimeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       operatingSystem: `${os.platform()}/${os.release()}`,
-      // TODO: Add more fields and switch from toMatchObject to toEqual.
+      shell: os.userInfo().shell || "Unknown",
+      memory: 0,
+      machineId: expect.any(String),
+      env: "test",
     });
   }, 20000);
 
@@ -80,7 +88,7 @@ describe("ChatGPT Flow", () => {
       flow.logFunctionCall(response.choices[0]?.message?.function_call);
     }
 
-    const logEntry = await flow.flushLogs(NO_OP_TRANSPORT);
+    const logEntry = await flow.flushLogs();
 
     // Assertions for Request
     expect(logEntry?.request).toEqual({
@@ -121,24 +129,111 @@ describe("ChatGPT Flow", () => {
     ]);
 
     // Assertions for Meta
-    expect(logEntry?.meta).toMatchObject({
-      env: "test",
-      shell: "/bin/zsh",
+    expect(logEntry?.meta).toEqual({
+      totalTokenCount: expect.any(Number),
+      inputTokenCost1k: expect.any(Number),
+      outputTokenCost1k: expect.any(Number),
+      triggerSource: "",
+      userId: "",
+      locale: Intl.DateTimeFormat().resolvedOptions().locale,
+      userTimeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       operatingSystem: `${os.platform()}/${os.release()}`,
-      // TODO: Add more fields and switch toMatchObject to toEqual.
+      shell: os.userInfo().shell || "Unknown",
+      memory: 0,
+      machineId: expect.any(String),
+      env: "test",
     });
   }, 20000);
 
   it("should process request with failure", async () => {
-    // E.g. by setting TestTopP to value > 1.
+    const TestPrompt = "Deliberate failure test";
+
+    flow.logPrompt(TestPrompt, "user-input");
+
+    const request = createFailureRequest(TestPrompt, []);
+    flow.logRequest(request);
+
+    try {
+      await openai.chat.completions.create(request);
+    } catch (error) {
+      flow.logError(error);
+    }
+
+    const logEntry = await flow.flushLogs();
+
+    // Assertions for Request
+    expect(logEntry?.request).toEqual({
+      prompt: TestPrompt,
+      model: "gpt-4o-mini",
+      temperature: TestTemperature,
+      topP: FailureTestTopP,
+      maxTokens: TestMaxTokens,
+      errorReason: "",
+      functionCalls: undefined,
+      outputMode: undefined,
+      systemPrompt: undefined,
+      tokenCount: undefined,
+      topK: undefined,
+    });
+
+    // Assertions for Meta
+    expect(logEntry?.meta).toEqual({
+      totalTokenCount: undefined,
+      inputTokenCost1k: expect.any(Number),
+      outputTokenCost1k: expect.any(Number),
+      triggerSource: "",
+      userId: "",
+      locale: Intl.DateTimeFormat().resolvedOptions().locale,
+      userTimeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      operatingSystem: `${os.platform()}/${os.release()}`,
+      shell: os.userInfo().shell || "Unknown",
+      memory: 0,
+      machineId: expect.any(String),
+      env: "test",
+    });
+
+    // Assertions for Error
+    expect(logEntry?.error).toEqual({
+      error: expect.any(String),
+      stack: expect.any(String),
+    });
   });
 
   it("should process request without a response", async () => {
-    // Simply flush logs without calling OpenAI API.
+    const TestPrompt = "Request without a response";
+
+    flow.logPrompt(TestPrompt, "user-input");
+
+    const request = createRequest(TestPrompt, []);
+    flow.logRequest(request);
+
+    const logEntry = await flow.flushLogs();
+
+    // Assertions for request
+    expect(logEntry?.request).toEqual({
+      prompt: TestPrompt,
+      model: "gpt-4o-mini",
+      temperature: TestTemperature,
+      topP: TestTopP,
+      maxTokens: TestMaxTokens,
+      errorReason: "",
+      functionCalls: undefined,
+      outputMode: undefined,
+      systemPrompt: undefined,
+      tokenCount: undefined,
+      topK: undefined,
+    });
   });
 
   it("should process prompt without a request", async () => {
-    // By flushing after only logging a prompt.
+    const TestPrompt = "Prompt without request";
+
+    flow.logPrompt(TestPrompt, "user-input");
+
+    const logEntry = await flow.flushLogs();
+
+    // Assertions for prompt
+    expect(logEntry?.prompt).toEqual("Prompt without request");
   });
 
   it("should set request and session IDs for a conversation", async () => {});
@@ -198,6 +293,7 @@ const TEST_WEATHER_FUNC_SCHEMA = {
 
 let TestTemperature = 0.7;
 let TestTopP = 0.3;
+let FailureTestTopP = -1;
 let TestMaxTokens = 150;
 const createRequest = (prompt: string, functions: any[]) => {
   return {
@@ -206,6 +302,17 @@ const createRequest = (prompt: string, functions: any[]) => {
     max_tokens: TestMaxTokens,
     temperature: TestTemperature,
     top_p: TestTopP,
+    ...(functions.length > 0 && { functions: functions }),
+  } as ChatCompletionCreateParamsNonStreaming;
+};
+
+const createFailureRequest = (prompt: string, functions: any[]) => {
+  return {
+    model: "gpt-4o-mini",
+    messages: [{ role: "user", content: prompt }],
+    max_tokens: TestMaxTokens,
+    temperature: TestTemperature,
+    top_p: FailureTestTopP,
     ...(functions.length > 0 && { functions: functions }),
   } as ChatCompletionCreateParamsNonStreaming;
 };
