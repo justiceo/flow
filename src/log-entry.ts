@@ -157,6 +157,9 @@ export interface LogEntry {
   /** The ID of the session */
   sessionId?: string;
 
+  /* The prompt information */
+  prompt?: string;
+
   /** The request information */
   request?: Request;
 
@@ -168,6 +171,9 @@ export interface LogEntry {
 
   /** The metadata for the log entry */
   meta?: Meta;
+
+  /** The error information */
+  error?: any;
 }
 
 /**
