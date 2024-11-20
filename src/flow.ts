@@ -1,14 +1,16 @@
 import fs from "fs/promises";
 import path from "path";
 import { ChatGptLog } from "./log-processors/chatgpt-log";
-import { GeminiLog } from "./log-processors/gemini-log";
+import { Transport } from "./transports/transport";
+// import { GeminiLog } from "./log-processors/gemini-log";
 import {
   LogEntry,
   BufferEntry,
   LogEntryType,
   Request,
   Response,
-  FunctionCall,
+  // FunctionCall,
+  FunctionCallResult,
   Meta,
 } from "./log-entry";
 import { LogProcessor } from "./log-processors/log-processor";
@@ -21,6 +23,7 @@ class Flow {
   private defaultHandler: LogProcessor = new ChatGptLog();
   private handlers: LogProcessor[] = [
     this.defaultHandler,
+    // new GrokLog(),
     // TODO: Add Gemini and Llama after updating their log processors.
   ];
 
@@ -55,11 +58,11 @@ class Flow {
     this.log(LogEntryType.RESPONSE, responseData);
   }
 
-  logFunctionCall(functionCallData: any): void {
-    this.log(LogEntryType.FUNCTION_CALL, functionCallData);
+  logFunctionCall(functionCallResult: any): void {
+    this.log(LogEntryType.FUNCTION_CALL_RESULT, functionCallResult);
   }
 
-  logError(error: Error): void {
+  logError(error: any): void {
     this.log(LogEntryType.ERROR, { error: error.message, stack: error.stack });
   }
 
@@ -92,17 +95,20 @@ class Flow {
         handler = appropriateHandler;
       }
     }
+
     return {
       requestId: this.currentRequestId,
       sessionId: this.sessionId,
+      prompt: await handler.processPrompt(buffer),
       request: await handler.processRequest(buffer),
       response: await handler.processResponse(buffer),
-      functionCalls: await handler.processFunctionCalls(buffer),
+      functionCallResult: await handler.processFunctionCallResult(buffer),
       meta: await handler.processMeta(buffer),
+      error: await handler.processError(buffer),
     };
   }
 
-  async flushLogs(transport?: (logEntry: LogEntry) => void): Promise<any> {
+  async flushLogs(transport?: Transport): Promise<any> {
     if (this.buffer.length === 0) {
       return;
     }
@@ -113,7 +119,7 @@ class Flow {
     const logEntry = await this.createLogEntry(readonlyBuffer);
 
     if (transport) {
-      transport(logEntry);
+      transport.send(logEntry);
     } else {
       const logFileName = `${new Date().toISOString().split("T")[0]}.jsonl`;
       const logFilePath = path.join("./data", logFileName);
