@@ -9,7 +9,8 @@ import {
   LogEntryType,
   Request,
   Response,
-  FunctionCall,
+  // FunctionCall,
+  FunctionCallResult,
   Meta,
 } from "./log-entry";
 import { LogProcessor } from "./log-processors/log-processor";
@@ -57,8 +58,8 @@ class Flow {
     this.log(LogEntryType.RESPONSE, responseData);
   }
 
-  logFunctionCall(functionCallData: any): void {
-    this.log(LogEntryType.FUNCTION_CALL, functionCallData);
+  logFunctionCall(functionCallResult: any): void {
+    this.log(LogEntryType.FUNCTION_CALL_RESULT, functionCallResult);
   }
 
   logError(error: any): void {
@@ -101,7 +102,7 @@ class Flow {
       prompt: await handler.processPrompt(buffer),
       request: await handler.processRequest(buffer),
       response: await handler.processResponse(buffer),
-      functionCalls: await handler.processFunctionCalls(buffer),
+      functionCallResult: await handler.processFunctionCallResult(buffer),
       meta: await handler.processMeta(buffer),
       error: await handler.processError(buffer),
     };

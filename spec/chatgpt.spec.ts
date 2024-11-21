@@ -18,7 +18,7 @@ describe("ChatGPT Flow", () => {
     });
   });
 
-  it.only("should process a simple request", async () => {
+  it("should process a simple request", async () => {
     const TestPrompt = "In which continent is Nigeria?";
     flow.logPrompt(TestPrompt, "user-input");
 
@@ -61,8 +61,12 @@ describe("ChatGPT Flow", () => {
       endTime: EndTime,
     });
 
-    // Assertions for Function Call
-    expect(logEntry?.functionCalls).toEqual([]);
+    // Assertions for Function Call Result
+    expect(logEntry?.functionCallResult).toEqual({
+      startTime: undefined,
+      endTime: undefined,
+      result: undefined,
+    });
 
     // Assertions for Meta
     expect(logEntry?.meta).toEqual({
@@ -96,8 +100,20 @@ describe("ChatGPT Flow", () => {
 
     flow.logResponse({ ...response, start_time: StartTime, end_time: EndTime });
 
+    let functionCallStartTime;
+    let functionCallEndTime;
+
     if (response.choices[0]?.message?.function_call) {
-      flow.logFunctionCall(response.choices[0]?.message?.function_call);
+      const functionCall = response.choices[0]?.message?.function_call;
+      const args = JSON.parse(functionCall.arguments);
+      functionCallStartTime = new Date().toISOString();
+      const weatherData = TEST_WEATHER_FUNC_IMPL(args.location);
+      functionCallEndTime = new Date().toISOString();
+      flow.logFunctionCall({
+        start_time: functionCallStartTime,
+        end_time: functionCallEndTime,
+        result: weatherData,
+      });
     }
 
     const logEntry = await flow.flushLogs();
@@ -126,20 +142,15 @@ describe("ChatGPT Flow", () => {
       errorReason: "",
       startTime: StartTime,
       endTime: EndTime,
+      functionCall: expect.any(Object),
     });
 
-    // Assertions for Function Call
-    expect(logEntry?.functionCalls).toEqual([
-      {
-        name: "TEST_WEATHER_FUNC_IMPL",
-        args: undefined,
-        exitCode: undefined,
-        startTime: undefined,
-        endTime: undefined,
-        result: undefined,
-        // TODO: Process these fields.
-      },
-    ]);
+    // Assertions for Function Call Result
+    expect(logEntry?.functionCallResult).toEqual({
+      startTime: functionCallStartTime,
+      endTime: functionCallEndTime,
+      result: expect.anything(),
+    });
 
     // Assertions for Meta
     expect(logEntry?.meta).toEqual({

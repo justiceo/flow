@@ -5,7 +5,7 @@ import {
   LogEntryType,
   Request,
   Response,
-  FunctionCall,
+  FunctionCallResult,
   Meta,
 } from "../log-entry";
 import { getModelCost } from "../costs/cost";
@@ -44,6 +44,10 @@ export class ChatGptLog implements LogProcessor {
   async processResponse(buffer: Readonly<BufferEntry[]>): Promise<Response> {
     const response = buffer.find((e) => e.type === LogEntryType.RESPONSE);
 
+    if (response?.data?.choices[0]?.message?.function_call) {
+      // flow.logFunctionCall(response.choices[0]?.message?.function_call);
+    }
+
     return {
       text: response?.data?.choices[0].message.content,
       finishReason: response?.data?.choices[0].finish_reason,
@@ -52,24 +56,22 @@ export class ChatGptLog implements LogProcessor {
       startTime: response?.data?.start_time,
       endTime: response?.data?.end_time,
       errorReason: "",
+      functionCall: response?.data?.choices[0]?.message?.function_call,
     };
   }
 
-  async processFunctionCalls(
+  async processFunctionCallResult(
     buffer: Readonly<BufferEntry[]>,
-  ): Promise<FunctionCall[]> {
-    const functionCalls = buffer
-      .filter((e) => e.type === LogEntryType.FUNCTION_CALL)
-      .map((entry) => ({
-        name: entry?.data?.name,
-        args: entry?.data?.args,
-        exitCode: entry?.data?.exitCode,
-        startTime: entry?.data?.start_time,
-        endTime: entry?.data?.end_time,
-        result: entry?.data?.result,
-      }));
+  ): Promise<FunctionCallResult> {
+    const functionCallResult = buffer.find(
+      (e) => e.type === LogEntryType.FUNCTION_CALL_RESULT,
+    );
 
-    return functionCalls;
+    return {
+      result: functionCallResult?.data?.result,
+      startTime: functionCallResult?.data?.start_time,
+      endTime: functionCallResult?.data?.end_time,
+    };
   }
 
   async processMeta(buffer: Readonly<BufferEntry[]>): Promise<Meta> {
