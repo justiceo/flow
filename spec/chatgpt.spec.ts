@@ -359,81 +359,78 @@ describe("ChatGPT Flow", () => {
     // Log the response
     flow.logResponse({ ...response, start_time: StartTime, end_time: EndTime });
 
-    console.log(response.choices[0]?.message);
+    console.log(response.choices[0]?.message.tool_calls);
 
-    let firstFunctionCallStartTime, firstFunctionCallEndTime;
-    let secondFunctionCallStartTime, secondFunctionCallEndTime;
+    const tool_calls = response.choices[0]?.message.tool_calls;
 
-    // Handle the first function call (weather forecast)
-    // if (
-    //   response.choices[0]?.message?.function_call?.name ===
-    //   "TEST_WEATHER_FUNC_IMPL"
-    // ) {
-    //   const functionCall = response.choices[0]?.message?.function_call;
-    //   const args = JSON.parse(functionCall.arguments);
+    let functionCallStartTime, functionCallEndTime;
+    let firstFunctionCallResult, secondFunctionCallResult;
 
-    //   firstFunctionCallStartTime = new Date().toISOString();
-    //   const weatherData = TEST_WEATHER_FUNC_IMPL(args.location);
-    //   firstFunctionCallEndTime = new Date().toISOString();
+    // Handle function calls
 
-    //   flow.logFunctionCall({
-    //     start_time: firstFunctionCallStartTime,
-    //     end_time: firstFunctionCallEndTime,
-    //     result: weatherData,
-    //   });
-    // }
+    tool_calls?.forEach((tool_call) => {
+      if (
+        tool_call.type === "function" &&
+        tool_call.function.name === "TEST_WEATHER_FUNC_IMPL"
+      ) {
+        const functionCall = tool_call.function;
+        const args = JSON.parse(functionCall.arguments);
+        functionCallStartTime = new Date().toISOString();
+        const firstFunctionCallResult = TEST_WEATHER_FUNC_IMPL(args.location);
+        console.log("Weather Data", firstFunctionCallResult);
+      }
 
-    // // Handle the second function call (hiking hours)
-    // if (
-    //   response.choices[1]?.message?.function_call?.name ===
-    //   "TEST_HIKING_TIME_FUNC_IMPL"
-    // ) {
-    //   const functionCall = response.choices[1]?.message?.function_call;
-    //   const args = JSON.parse(functionCall.arguments);
+      if (
+        tool_call.type === "function" &&
+        tool_call.function.name === "TEST_HIKING_TIME_FUNC_IMPL"
+      ) {
+        const functionCall = tool_call.function;
+        const args = JSON.parse(functionCall.arguments);
+        const secondFunctionCallResult = TEST_HIKING_TIME_FUNC_IMPL(
+          args.departureTime,
+          args.daylightDuration,
+        );
+        functionCallEndTime = new Date().toISOString();
+        console.log("Hiking Data", secondFunctionCallResult);
+      }
+    });
 
-    //   secondFunctionCallStartTime = new Date().toISOString();
-    //   const hikingData = TEST_HIKING_TIME_FUNC_IMPL(
-    //     args.departureTime,
-    //     args.daylightDuration,
-    //   );
-    //   secondFunctionCallEndTime = new Date().toISOString();
-
-    //   flow.logFunctionCall({
-    //     start_time: secondFunctionCallStartTime,
-    //     end_time: secondFunctionCallEndTime,
-    //     result: hikingData,
-    //   });
-    // }
+    // Log the function call results
+    flow.logFunctionCall({
+      start_time: functionCallStartTime,
+      end_time: functionCallEndTime,
+      result: [firstFunctionCallResult, secondFunctionCallResult],
+    });
 
     // Flush all logs
     const logEntry = await flow.flushLogs();
 
-    // // Assertions for Request
-    // expect(logEntry?.request).toEqual({
-    //   prompt: TestPrompt,
-    //   model: "gpt-4o-mini",
-    //   temperature: TestTemperature,
-    //   topP: TestTopP,
-    //   maxTokens: TestMaxTokens,
-    //   errorReason: "",
-    //   functionCalls: [TEST_WEATHER_FUNC_SCHEMA, TEST_HIKING_TIME_FUNC_SCHEMA],
-    //   outputMode: undefined,
-    //   systemPrompt: undefined,
-    //   tokenCount: undefined,
-    //   topK: undefined,
-    // });
+    // Assertions for Request
+    expect(logEntry?.request).toEqual({
+      prompt: TestPrompt,
+      model: "gpt-4o-mini",
+      temperature: TestTemperature,
+      topP: TestTopP,
+      maxTokens: TestMaxTokens,
+      errorReason: "",
+      functionCalls: [TEST_WEATHER_FUNC_SCHEMA, TEST_HIKING_TIME_FUNC_SCHEMA],
+      outputMode: undefined,
+      systemPrompt: undefined,
+      tokenCount: undefined,
+      topK: undefined,
+    });
 
-    // // Assertions for Response
-    // expect(logEntry?.response).toEqual({
-    //   status: 200,
-    //   finishReason: "function_call",
-    //   text: null,
-    //   tokenCount: expect.any(Number),
-    //   errorReason: "",
-    //   startTime: StartTime,
-    //   endTime: EndTime,
-    //   functionCall: expect.any(Object),
-    // });
+    // Assertions for Response
+    expect(logEntry?.response).toEqual({
+      status: 200,
+      finishReason: "function_call",
+      text: null,
+      tokenCount: expect.any(Number),
+      errorReason: "",
+      startTime: StartTime,
+      endTime: EndTime,
+      functionCall: expect.any(Object),
+    });
 
     // // Assertions for the First Function Call Result (weather)
     // expect(logEntry?.functionCalls[0]).toEqual({
@@ -526,40 +523,80 @@ const TEST_HIKING_TIME_FUNC_IMPL = (
   };
 };
 
+// const TEST_WEATHER_FUNC_SCHEMA = {
+//   name: "TEST_WEATHER_FUNC_IMPL",
+//   description: "Gets the weather information for a location",
+//   parameters: {
+//     type: "object",
+//     properties: {
+//       location: {
+//         type: "string",
+//         description: "The name of the city to get the weather for",
+//       },
+//     },
+//     required: ["location"],
+//   },
+// };
 const TEST_WEATHER_FUNC_SCHEMA = {
-  name: "TEST_WEATHER_FUNC_IMPL",
-  description: "Gets the weather information for a location",
-  parameters: {
-    type: "object",
-    properties: {
-      location: {
-        type: "string",
-        description: "The name of the city to get the weather for",
+  type: "function",
+  function: {
+    name: "TEST_WEATHER_FUNC_IMPL",
+    description: "Gets the weather information for a location",
+    parameters: {
+      type: "object",
+      properties: {
+        location: {
+          type: "string",
+          description: "The name of the city to get the weather for",
+        },
       },
+      required: ["location"],
     },
-    required: ["location"],
   },
 };
 
 const TEST_HIKING_TIME_FUNC_SCHEMA = {
-  name: "TEST_HIKING_TIME_FUNC_IMPL",
-  description:
-    "Calculates available hiking hours based on departure time and daylight duration",
-  parameters: {
-    type: "object",
-    properties: {
-      departureTime: {
-        type: "string",
-        description: "Time in HH:MM format when the user plans to start hiking",
+  type: "function",
+  function: {
+    name: "TEST_HIKING_TIME_FUNC_IMPL",
+    description:
+      "Calculates available hiking hours based on departure time and daylight duration",
+    parameters: {
+      type: "object",
+      properties: {
+        departureTime: {
+          type: "string",
+          description:
+            "Time in HH:MM format when the user plans to start hiking",
+        },
+        daylightDuration: {
+          type: "number",
+          description: "Total daylight hours available for hiking",
+        },
       },
-      daylightDuration: {
-        type: "number",
-        description: "Total daylight hours available for hiking",
-      },
+      required: ["departureTime", "daylightDuration"],
     },
-    required: ["departureTime", "daylightDuration"],
   },
 };
+// const TEST_HIKING_TIME_FUNC_SCHEMA = {
+//   name: "TEST_HIKING_TIME_FUNC_IMPL",
+//   description:
+//     "Calculates available hiking hours based on departure time and daylight duration",
+//   parameters: {
+//     type: "object",
+//     properties: {
+//       departureTime: {
+//         type: "string",
+//         description: "Time in HH:MM format when the user plans to start hiking",
+//       },
+//       daylightDuration: {
+//         type: "number",
+//         description: "Total daylight hours available for hiking",
+//       },
+//     },
+//     required: ["departureTime", "daylightDuration"],
+//   },
+// };
 
 let TestTemperature = 0.7;
 let TestTopP = 0.3;
@@ -572,28 +609,11 @@ const createRequest = (prompt: string, functions: any[]) => {
     max_tokens: TestMaxTokens,
     temperature: TestTemperature,
     top_p: TestTopP,
-    ...(functions.length > 0 && { functions: functions }),
-    tools: [
-      {
-        type: "function",
-        function: {
-          name: "get_delivery_date",
-          description:
-            "Get the delivery date for a customer's order. Call this whenever you need to know the delivery date, for example when a customer asks 'Where is my package'",
-          parameters: {
-            type: "object",
-            properties: {
-              order_id: {
-                type: "string",
-                description: "The customer's order ID.",
-              },
-            },
-            required: ["order_id"],
-            additionalProperties: false,
-          },
-        },
-      },
-    ],
+    // ...(functions.length > 0 && { functions: functions }),
+
+    ...(functions.length > 0 && {
+      tools: functions,
+    }),
   } as ChatCompletionCreateParamsNonStreaming;
 };
 

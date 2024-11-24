@@ -33,7 +33,7 @@ export class ChatGptLog implements LogProcessor {
       temperature: request?.data?.temperature,
       topK: request?.data?.top_k,
       topP: request?.data?.top_p,
-      functionCalls: request?.data?.functions,
+      functionCalls: request?.data?.tools,
       maxTokens: request?.data?.max_tokens,
       tokenCount: request?.data?.systemPrompt?.split("").length,
       errorReason: "",
@@ -43,10 +43,6 @@ export class ChatGptLog implements LogProcessor {
 
   async processResponse(buffer: Readonly<BufferEntry[]>): Promise<Response> {
     const response = buffer.find((e) => e.type === LogEntryType.RESPONSE);
-
-    if (response?.data?.choices[0]?.message?.function_call) {
-      // flow.logFunctionCall(response.choices[0]?.message?.function_call);
-    }
 
     return {
       text: response?.data?.choices[0].message.content,
