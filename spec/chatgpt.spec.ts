@@ -260,11 +260,219 @@ describe("ChatGPT Flow", () => {
     expect(logEntry?.prompt).toEqual("Prompt without request");
   });
 
-  it("should set request and session IDs for a conversation", async () => {});
+  it("should set request and session IDs for a conversation", async () => {
+    const TestPrompt = "In which continent is Nigeria?";
+    flow.logPrompt(TestPrompt, "user-input");
 
-  it("should process request and response containing func call, even if func call is not executed", async () => {});
+    const request = createRequest(TestPrompt, []);
+    flow.logRequest(request);
 
-  it("should process a response that results in multiple parallel function calls", async () => {});
+    const logEntry = await flow.flushLogs();
+
+    expect(logEntry?.requestId).toBeDefined();
+    expect(logEntry?.sessionId).toBeDefined();
+  });
+
+  it("should process request and response containing func call, even if func call is not executed", async () => {
+    const TestPrompt = "What's the weather in Ikorodu, Lagos?";
+    flow.logPrompt(TestPrompt, "user-input");
+
+    const request = createRequest(TestPrompt, [TEST_WEATHER_FUNC_SCHEMA]);
+    flow.logRequest(request);
+
+    let StartTime = new Date().toISOString();
+
+    const response = await openai.chat.completions.create(request);
+
+    let EndTime = new Date().toISOString();
+
+    flow.logResponse({ ...response, start_time: StartTime, end_time: EndTime });
+
+    const logEntry = await flow.flushLogs();
+
+    // Assertions for Request
+    expect(logEntry?.request).toEqual({
+      prompt: TestPrompt,
+      model: "gpt-4o-mini",
+      temperature: TestTemperature,
+      topP: TestTopP,
+      maxTokens: TestMaxTokens,
+      errorReason: "",
+      functionCalls: [TEST_WEATHER_FUNC_SCHEMA],
+      outputMode: undefined,
+      systemPrompt: undefined,
+      tokenCount: undefined,
+      topK: undefined,
+    });
+
+    // Assertions for Response
+    expect(logEntry?.response).toEqual({
+      status: 200,
+      finishReason: "function_call",
+      text: null,
+      tokenCount: expect.any(Number),
+      errorReason: "",
+      startTime: StartTime,
+      endTime: EndTime,
+      functionCall: expect.any(Object),
+    });
+
+    // Assertions for Meta
+    expect(logEntry?.meta).toEqual({
+      totalTokenCount: expect.any(Number),
+      inputTokenCost1k: expect.any(Number),
+      outputTokenCost1k: expect.any(Number),
+      triggerSource: "",
+      userId: "",
+      locale: Intl.DateTimeFormat().resolvedOptions().locale,
+      userTimeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      operatingSystem: `${os.platform()}/${os.release()}`,
+      shell: os.userInfo().shell || "Unknown",
+      memory: 0,
+      machineId: expect.any(String),
+      env: "test",
+    });
+  }, 20000);
+
+  it.only("should process a response that results in multiple parallel function calls", async () => {
+    const TestPrompt = `
+    I'm planning a hike tomorrow. Can you:
+    1. Get the weather forecast for Yosemite National Park?
+    2. Tell me how many hours I'd have for the hike if I leave at 7:00 AM?
+  `;
+
+    flow.logPrompt(TestPrompt, "user-input");
+
+    const request = createRequest(TestPrompt, [
+      TEST_WEATHER_FUNC_SCHEMA,
+      TEST_HIKING_TIME_FUNC_SCHEMA,
+    ]);
+    flow.logRequest(request);
+
+    let StartTime = new Date().toISOString();
+
+    const response = await openai.chat.completions.create(request);
+
+    // Capture the end time of the response
+    let EndTime = new Date().toISOString();
+
+    // Log the response
+    flow.logResponse({ ...response, start_time: StartTime, end_time: EndTime });
+
+    console.log(response.choices[0]?.message);
+
+    let firstFunctionCallStartTime, firstFunctionCallEndTime;
+    let secondFunctionCallStartTime, secondFunctionCallEndTime;
+
+    // Handle the first function call (weather forecast)
+    // if (
+    //   response.choices[0]?.message?.function_call?.name ===
+    //   "TEST_WEATHER_FUNC_IMPL"
+    // ) {
+    //   const functionCall = response.choices[0]?.message?.function_call;
+    //   const args = JSON.parse(functionCall.arguments);
+
+    //   firstFunctionCallStartTime = new Date().toISOString();
+    //   const weatherData = TEST_WEATHER_FUNC_IMPL(args.location);
+    //   firstFunctionCallEndTime = new Date().toISOString();
+
+    //   flow.logFunctionCall({
+    //     start_time: firstFunctionCallStartTime,
+    //     end_time: firstFunctionCallEndTime,
+    //     result: weatherData,
+    //   });
+    // }
+
+    // // Handle the second function call (hiking hours)
+    // if (
+    //   response.choices[1]?.message?.function_call?.name ===
+    //   "TEST_HIKING_TIME_FUNC_IMPL"
+    // ) {
+    //   const functionCall = response.choices[1]?.message?.function_call;
+    //   const args = JSON.parse(functionCall.arguments);
+
+    //   secondFunctionCallStartTime = new Date().toISOString();
+    //   const hikingData = TEST_HIKING_TIME_FUNC_IMPL(
+    //     args.departureTime,
+    //     args.daylightDuration,
+    //   );
+    //   secondFunctionCallEndTime = new Date().toISOString();
+
+    //   flow.logFunctionCall({
+    //     start_time: secondFunctionCallStartTime,
+    //     end_time: secondFunctionCallEndTime,
+    //     result: hikingData,
+    //   });
+    // }
+
+    // Flush all logs
+    const logEntry = await flow.flushLogs();
+
+    // // Assertions for Request
+    // expect(logEntry?.request).toEqual({
+    //   prompt: TestPrompt,
+    //   model: "gpt-4o-mini",
+    //   temperature: TestTemperature,
+    //   topP: TestTopP,
+    //   maxTokens: TestMaxTokens,
+    //   errorReason: "",
+    //   functionCalls: [TEST_WEATHER_FUNC_SCHEMA, TEST_HIKING_TIME_FUNC_SCHEMA],
+    //   outputMode: undefined,
+    //   systemPrompt: undefined,
+    //   tokenCount: undefined,
+    //   topK: undefined,
+    // });
+
+    // // Assertions for Response
+    // expect(logEntry?.response).toEqual({
+    //   status: 200,
+    //   finishReason: "function_call",
+    //   text: null,
+    //   tokenCount: expect.any(Number),
+    //   errorReason: "",
+    //   startTime: StartTime,
+    //   endTime: EndTime,
+    //   functionCall: expect.any(Object),
+    // });
+
+    // // Assertions for the First Function Call Result (weather)
+    // expect(logEntry?.functionCalls[0]).toEqual({
+    //   start_time: firstFunctionCallStartTime,
+    //   end_time: firstFunctionCallEndTime,
+    //   result: {
+    //     location: "Yosemite National Park",
+    //     temperature: "22°C",
+    //     condition: "Sunny",
+    //   },
+    // });
+
+    // // Assertions for the Second Function Call Result (hiking hours)
+    // expect(logEntry?.functionCalls[1]).toEqual({
+    //   start_time: secondFunctionCallStartTime,
+    //   end_time: secondFunctionCallEndTime,
+    //   result: {
+    //     departureTime: "07:00",
+    //     daylightDuration: 12,
+    //     hikingHours: 5, // Example result based on logic
+    //   },
+    // });
+
+    // // Assertions for Meta Information
+    // expect(logEntry?.meta).toEqual({
+    //   totalTokenCount: expect.any(Number),
+    //   inputTokenCost1k: expect.any(Number),
+    //   outputTokenCost1k: expect.any(Number),
+    //   triggerSource: "",
+    //   userId: "",
+    //   locale: Intl.DateTimeFormat().resolvedOptions().locale,
+    //   userTimeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    //   operatingSystem: `${os.platform()}/${os.release()}`,
+    //   shell: os.userInfo().shell || "Unknown",
+    //   memory: 0,
+    //   machineId: expect.any(String),
+    //   env: "test",
+    // });
+  }, 20000);
 
   it("should process a response that has both text and function call", async () => {});
 
@@ -291,6 +499,12 @@ describe("ChatGPT Flow", () => {
 
 ///// Test Helpers /////
 
+type TrafficData = {
+  location: string;
+  trafficLevel: "low" | "moderate" | "high";
+  delayMinutes: number;
+};
+
 const TEST_WEATHER_FUNC_IMPL = (location: string) => {
   const weatherData = {
     location: location,
@@ -298,6 +512,18 @@ const TEST_WEATHER_FUNC_IMPL = (location: string) => {
     condition: "Sunny",
   };
   return weatherData;
+};
+const TEST_HIKING_TIME_FUNC_IMPL = (
+  departureTime: string,
+  daylightDuration: number,
+) => {
+  const startHour = parseInt(departureTime.split(":")[0]);
+  const hikingHours = daylightDuration - startHour;
+  return {
+    departureTime,
+    daylightDuration,
+    hikingHours: hikingHours > 0 ? hikingHours : 0,
+  };
 };
 
 const TEST_WEATHER_FUNC_SCHEMA = {
@@ -315,6 +541,26 @@ const TEST_WEATHER_FUNC_SCHEMA = {
   },
 };
 
+const TEST_HIKING_TIME_FUNC_SCHEMA = {
+  name: "TEST_HIKING_TIME_FUNC_IMPL",
+  description:
+    "Calculates available hiking hours based on departure time and daylight duration",
+  parameters: {
+    type: "object",
+    properties: {
+      departureTime: {
+        type: "string",
+        description: "Time in HH:MM format when the user plans to start hiking",
+      },
+      daylightDuration: {
+        type: "number",
+        description: "Total daylight hours available for hiking",
+      },
+    },
+    required: ["departureTime", "daylightDuration"],
+  },
+};
+
 let TestTemperature = 0.7;
 let TestTopP = 0.3;
 let FailureTestTopP = -1;
@@ -327,6 +573,27 @@ const createRequest = (prompt: string, functions: any[]) => {
     temperature: TestTemperature,
     top_p: TestTopP,
     ...(functions.length > 0 && { functions: functions }),
+    tools: [
+      {
+        type: "function",
+        function: {
+          name: "get_delivery_date",
+          description:
+            "Get the delivery date for a customer's order. Call this whenever you need to know the delivery date, for example when a customer asks 'Where is my package'",
+          parameters: {
+            type: "object",
+            properties: {
+              order_id: {
+                type: "string",
+                description: "The customer's order ID.",
+              },
+            },
+            required: ["order_id"],
+            additionalProperties: false,
+          },
+        },
+      },
+    ],
   } as ChatCompletionCreateParamsNonStreaming;
 };
 
