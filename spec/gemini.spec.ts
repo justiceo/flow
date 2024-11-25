@@ -90,7 +90,7 @@ export async function useGeminiApi(prompt: string) {
   }
 }
 
-describe("Gemini Flow", () => {
+describe.skip("Gemini Flow", () => {
   it("should log prompts, requests, responses, function calls using live api", async () => {
     const logEntry = await useGeminiApi(
       "What's the weather in Ikorodu, Lagos?",
