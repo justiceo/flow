@@ -52,7 +52,7 @@ export class ChatGptLog implements LogProcessor {
       startTime: response?.data?.start_time,
       endTime: response?.data?.end_time,
       errorReason: "",
-      functionCall: response?.data?.choices[0]?.message?.function_call,
+      functionCall: response?.data.choices[0]?.message.tool_calls, // The function calls returned by the llm api
     };
   }
 
