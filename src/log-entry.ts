@@ -2,10 +2,7 @@ export enum LogEntryType {
   PROMPT,
   REQUEST,
   RESPONSE,
-
-  // TODO: Repurpose FUNCTION_CALL to FUNCTION_CALL_RESULT (for logging the result of calling the function),
-  // The original FUNCTION_CALL arguments would have been logged in RESPONSE entry.
-  FUNCTION_CALL,
+  FUNCTION_CALL_RESULT,
   CUSTOM,
   ERROR,
 }
@@ -36,7 +33,7 @@ export interface Request {
   topP?: number;
 
   /** The function calls available for the model */
-  functionCalls?: string[];
+  tools?: string[];
 
   /** The maximum number of tokens for the response */
   maxTokens?: number;
@@ -78,12 +75,15 @@ export interface Response {
 
   /** The output mode (e.g., "streaming", "schema") */
   outputMode?: string;
+
+  /** The function call returned in the response*/
+  toolUse: string[];
 }
 
 /**
  * Represents a function call in a log entry.
  */
-export interface FunctionCall {
+export interface FunctionCallResult {
   /** The name of the function called */
   name?: string;
 
@@ -93,14 +93,14 @@ export interface FunctionCall {
   /** The result of the function call */
   result?: string;
 
-  /** The exit code of the function call */
-  exitCode?: number;
-
   /** The timestamp when the function call started */
   startTime?: number;
 
   /** The timestamp when the function call ended */
   endTime?: number;
+
+  /** The exit code of the function call */
+  exitCode?: number;
 }
 
 /**
@@ -157,17 +157,23 @@ export interface LogEntry {
   /** The ID of the session */
   sessionId?: string;
 
+  /* The prompt information */
+  prompt?: string;
+
   /** The request information */
   request?: Request;
 
   /** The response information */
   response?: Response;
 
-  /** The function calls made during the request/response cycle */
-  functionCalls?: FunctionCall[];
+  /** The function call result */
+  functionCallResult?: FunctionCallResult;
 
   /** The metadata for the log entry */
   meta?: Meta;
+
+  /** The error information */
+  error?: any;
 }
 
 /**

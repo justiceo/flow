@@ -5,7 +5,7 @@ import {
   LogEntryType,
   Request,
   Response,
-  FunctionCall,
+  FunctionCallResult,
   Meta,
 } from "../log-entry";
 import { getModelCost } from "../costs/cost";
@@ -27,7 +27,7 @@ export class ChatGptLog implements LogProcessor {
       temperature: request?.data?.temperature,
       topK: request?.data?.top_k,
       topP: request?.data?.top_p,
-      functionCalls: request?.data?.functions,
+      tools: request?.data?.tools,
       maxTokens: request?.data?.max_tokens,
       tokenCount: request?.data?.systemPrompt?.split("").length,
       errorReason: "",
@@ -37,33 +37,53 @@ export class ChatGptLog implements LogProcessor {
 
   async processResponse(buffer: Readonly<BufferEntry[]>): Promise<Response> {
     const response = buffer.find((e) => e.type === LogEntryType.RESPONSE);
+    // Check if the response is streamed or non-streamed
+    const isStreamed =
+      Array.isArray(response?.data?.choices) &&
+      response?.data?.choices[0]?.delta;
 
-    return {
-      text: response?.data?.choices[0].message.content,
-      finishReason: response?.data?.choices[0].finish_reason,
-      tokenCount: response?.data?.usage.total_tokens,
-      status: 200,
-      startTime: response?.data?.start_time,
-      endTime: response?.data?.end_time,
-      errorReason: "",
-    };
+    if (isStreamed) {
+      // Handle streamed response
+      return {
+        text: response?.data?.choices[0].delta?.content,
+        finishReason: response?.data?.choices[0].finish_reason,
+        tokenCount: 0,
+        status: 200,
+        startTime: response?.data?.start_time,
+        endTime: response?.data?.end_time,
+        errorReason: "",
+        toolUse: response?.data.choices[0]?.message?.tool_calls,
+      };
+    } else {
+      // Handle non-streamed response
+      return {
+        text: response?.data?.choices[0].message.content,
+        finishReason: response?.data?.choices[0].finish_reason,
+        tokenCount: response?.data?.usage.total_tokens,
+        status: 200,
+        startTime: response?.data?.start_time,
+        endTime: response?.data?.end_time,
+        errorReason: "",
+        toolUse: response?.data.choices[0]?.message.tool_calls,
+      };
+    }
   }
 
-  async processFunctionCalls(
+  async processFunctionCallResult(
     buffer: Readonly<BufferEntry[]>,
-  ): Promise<FunctionCall[]> {
-    const functionCalls = buffer
-      .filter((e) => e.type === LogEntryType.FUNCTION_CALL)
-      .map((entry) => ({
-        name: entry?.data?.name,
-        args: entry?.data?.args,
-        exitCode: entry?.data?.exitCode,
-        startTime: entry?.data?.start_time,
-        endTime: entry?.data?.end_time,
-        result: entry?.data?.result,
-      }));
+  ): Promise<FunctionCallResult> {
+    const functionCallResult = buffer.find(
+      (e) => e.type === LogEntryType.FUNCTION_CALL_RESULT,
+    );
 
-    return functionCalls;
+    return {
+      name: functionCallResult?.data?.name,
+      args: functionCallResult?.data?.args,
+      result: functionCallResult?.data?.result,
+      startTime: functionCallResult?.data?.start_time,
+      endTime: functionCallResult?.data?.end_time,
+      exitCode: 0,
+    };
   }
 
   async processMeta(buffer: Readonly<BufferEntry[]>): Promise<Meta> {
@@ -72,7 +92,7 @@ export class ChatGptLog implements LogProcessor {
     const modelCost = await getModelCost(model);
     const tokenCount = buffer.find(
       (entry) => entry.type === LogEntryType.RESPONSE,
-    )?.data?.usage.total_tokens;
+    )?.data?.usage?.total_tokens;
 
     return {
       totalTokenCount: tokenCount,
@@ -88,5 +108,11 @@ export class ChatGptLog implements LogProcessor {
       machineId: machineIdSync(),
       env: process.env.NODE_ENV || "development",
     };
+  }
+
+  async processError(buffer: Readonly<BufferEntry[]>): Promise<string> {
+    const error = buffer.find((e) => e.type === LogEntryType.ERROR);
+
+    return error?.data;
   }
 }
