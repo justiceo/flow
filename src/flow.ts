@@ -2,7 +2,7 @@ import fs from "fs/promises";
 import path from "path";
 import { ChatGptLog } from "./log-processors/chatgpt-log";
 import { Transport } from "./transports/transport";
-// import { GeminiLog } from "./log-processors/gemini-log";
+import { GeminiLog } from "./log-processors/gemini-log";
 import {
   LogEntry,
   BufferEntry,
@@ -23,7 +23,7 @@ class Flow {
   private defaultHandler: LogProcessor = new ChatGptLog();
   private handlers: LogProcessor[] = [
     this.defaultHandler,
-    // new GrokLog(),
+    new GeminiLog(),
     // TODO: Add Gemini and Llama after updating their log processors.
   ];
 
@@ -63,11 +63,7 @@ class Flow {
   }
 
   logError(error: any): void {
-    this.log(LogEntryType.ERROR, {
-      error_message: error.message,
-      error_type: error.type,
-      stack: error.stack,
-    });
+    this.log(LogEntryType.ERROR, { error: error.message, stack: error.stack });
   }
 
   log(key: string | LogEntryType, data: any): void {
@@ -92,25 +88,31 @@ class Flow {
     let handler = this.defaultHandler;
     const request = buffer.find((e) => e.type === LogEntryType.REQUEST);
     if (request) {
-      const appropriateHandler = this.handlers.find((h) =>
-        h.canHandleRequest(request),
-      );
+      const appropriateHandler = await Promise.all(
+        this.handlers.map(async (h) =>
+          (await h.canHandleRequest(request)) ? h : null,
+        ),
+      ).then((results) => results.find((h) => h !== null));
       if (appropriateHandler) {
         handler = appropriateHandler;
       }
     }
 
+
     return {
       requestId: this.currentRequestId,
       sessionId: this.sessionId,
+      prompt: await handler.processPrompt(buffer),
       request: await handler.processRequest(buffer),
       response: await handler.processResponse(buffer),
       functionCallResult: await handler.processFunctionCallResult(buffer),
       meta: await handler.processMeta(buffer),
       error: await handler.processError(buffer),
+      error: await handler.processError(buffer),
     };
   }
 
+  async flushLogs(transport?: Transport): Promise<any> {
   async flushLogs(transport?: Transport): Promise<any> {
     if (this.buffer.length === 0) {
       return;
@@ -122,6 +124,7 @@ class Flow {
     const logEntry = await this.createLogEntry(readonlyBuffer);
 
     if (transport) {
+      transport.send(logEntry);
       transport.send(logEntry);
     } else {
       const logFileName = `${new Date().toISOString().split("T")[0]}.jsonl`;

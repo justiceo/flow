@@ -16,6 +16,12 @@ export class ChatGptLog implements LogProcessor {
     return request.data?.model?.includes("gpt");
   }
 
+  async processPrompt(buffer: Readonly<BufferEntry[]>): Promise<string> {
+    const prompt = buffer.find((e) => e.type === LogEntryType.PROMPT);
+
+    return prompt?.data?.prompt;
+  }
+
   async processRequest(buffer: Readonly<BufferEntry[]>): Promise<Request> {
     const prompt = buffer.find((e) => e.type === LogEntryType.PROMPT);
     const request = buffer.find((e) => e.type === LogEntryType.REQUEST);
