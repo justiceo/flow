@@ -5,56 +5,62 @@ import {
   LogEntryType,
   Request,
   Response,
-  FunctionCall,
+  FunctionCallResult,
   Meta,
+  Error,
 } from "../log-entry";
 import { getModelCost } from "../costs/cost";
-export class GeminiLog {
-  processRequest(buffer: Readonly<BufferEntry[]>): Request | {} {
+import { LogProcessor } from "./log-processor";
+export class GeminiLog implements LogProcessor {
+  async canHandleRequest(request: Readonly<BufferEntry>): Promise<boolean> {
+    return request.data?.model?.includes("gemini");
+  }
+
+  async processRequest(buffer: Readonly<BufferEntry[]>): Promise<Request> {
     const prompt = buffer.find((e) => e.type === LogEntryType.PROMPT);
     const request = buffer.find((e) => e.type === LogEntryType.REQUEST);
-
+    // console.log(request);
+    const tools = request?.data?.tools;
     return {
       prompt: prompt?.data?.prompt,
       model: request?.data?.model,
       temperature: request?.data?.generationConfig.temperature,
-      // maxTokens: request?.data?.max_tokens,
-      maxOutputTokens: request?.data?.generationConfig.maxOutputTokens,
+      maxTokens: request?.data?.generationConfig.maxOutputTokens,
+      tokenCount: request?.data?.systemPrompt?.split("").length,
       topP: request?.data?.generationConfig.topP,
       topK: request?.data?.generationConfig.topK,
       systemPrompt: request?.data?.systemPrompt,
       outputMode: request?.data?.outputMode,
+      errorReason: "",
+      tools: request?.data?.tools,
     };
   }
 
-  processResponse(buffer: Readonly<BufferEntry[]>): Response | {} {
+  async processResponse(buffer: Readonly<BufferEntry[]>): Promise<Response> {
     const response = buffer.find((e) => e.type === LogEntryType.RESPONSE);
 
     return {
       text: response?.data?.text() ? response?.data?.text() : "",
       finishReason: response?.data?.candidates[0]?.finishReason,
-      completionTime: response?.timestamp,
       tokenCount: response?.data?.usageMetadata.totalTokenCount,
       status: 200,
-      startTime: response?.data?.start_time,
-      endTime: response?.data?.end_time,
       errorReason: "",
+      toolUse: response?.data?.functionCalls(),
     };
   }
+  async processFunctionCallResult(
+    buffer: Readonly<BufferEntry[]>,
+  ): Promise<FunctionCallResult> {
+    const functionCallResult = buffer.find(
+      (e) => e.type === LogEntryType.FUNCTION_CALL_RESULT,
+    );
 
-  processFunctionCalls(buffer: Readonly<BufferEntry[]>): FunctionCall[] {
-    const functionCalls = buffer
-      .filter((e) => e.type === LogEntryType.FUNCTION_CALL)
-      .map((entry) => ({
-        name: entry?.data?.name,
-        args: entry?.data?.args,
-        exitCode: entry?.data?.exitCode,
-        startTime: entry?.data?.start_time,
-        endTime: entry?.data?.end_time,
-        result: entry?.data?.result,
-      }));
-
-    return functionCalls;
+    return {
+      name: functionCallResult?.data?.name,
+      args: functionCallResult?.data?.args,
+      result: functionCallResult?.data?.result,
+      exitCode: 0,
+    };
   }
 
   async processMeta(buffer: Readonly<BufferEntry[]>) {
@@ -70,15 +76,22 @@ export class GeminiLog {
       inputTokenCost1k: modelCost?.tokensInCost,
       outputTokenCost1k: modelCost?.tokensOutCost,
       triggerSource: "",
-      // outputMode: metaDetails?.data?.data?.outputMode,
       userId: "",
-      country: "",
+      locale: Intl.DateTimeFormat().resolvedOptions().locale,
+      userTimeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       operatingSystem: `${os.platform()}/${os.release()}`,
       shell: os.userInfo().shell || "Unknown",
-      userTimeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       memory: 0,
       machineId: machineIdSync(),
       env: process.env.NODE_ENV || "development",
+    };
+  }
+
+  async processError(buffer: Readonly<BufferEntry[]>): Promise<Error> {
+    const error = buffer.find((e) => e.type === LogEntryType.ERROR);
+
+    return {
+      error_message: error?.data?.message,
     };
   }
 }

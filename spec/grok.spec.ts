@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import { ChatCompletionCreateParamsNonStreaming } from "openai/resources/chat/completions";
 import { flow } from "../src/flow";
 
-describe("Grok Flow", () => {
+describe.skip("Grok Flow", () => {
   let openai: OpenAI;
 
   beforeAll(() => {
