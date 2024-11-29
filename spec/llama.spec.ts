@@ -61,7 +61,7 @@ async function useLLamaApi(prompt: string) {
       try {
         const args = JSON.parse(functionCall.arguments);
         const weatherData = await getWeather(args.location);
-        flow.logFunctionCall({ ...functionCall, result: weatherData });
+        // flow.logFunctionCall({ ...functionCall, result: weatherData });
         // console.log(`Weather Data for ${args.location}:`, weatherData);
       } catch (parseError) {
         console.error("Error parsing function call arguments:", parseError);

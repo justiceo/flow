@@ -3,7 +3,7 @@ import path from "path";
 import { ChatGptLog } from "./log-processors/chatgpt-log";
 import { GrokLog } from "./log-processors/grok-log";
 import { Transport } from "./transports/transport";
-// import { GeminiLog } from "./log-processors/gemini-log";
+import { GeminiLog } from "./log-processors/gemini-log";
 import {
   LogEntry,
   BufferEntry,
@@ -24,6 +24,7 @@ class Flow {
   private defaultHandler: LogProcessor = new ChatGptLog();
   private handlers: LogProcessor[] = [
     this.defaultHandler,
+    new GeminiLog(),
     new GrokLog(),
     // TODO: Add Gemini and Llama after updating their log processors.
   ];
@@ -59,16 +60,12 @@ class Flow {
     this.log(LogEntryType.RESPONSE, responseData);
   }
 
-  logFunctionCall(functionCallResult: any): void {
+  logFunctionCallResult(functionCallResult: any): void {
     this.log(LogEntryType.FUNCTION_CALL_RESULT, functionCallResult);
   }
 
   logError(error: any): void {
-    this.log(LogEntryType.ERROR, {
-      error_message: error.message,
-      error_type: error.type,
-      stack: error.stack,
-    });
+    this.log(LogEntryType.ERROR, error);
   }
 
   log(key: string | LogEntryType, data: any): void {
@@ -94,10 +91,11 @@ class Flow {
     const request = buffer.find((e) => e.type === LogEntryType.REQUEST);
     if (request) {
       const appropriateHandler = await Promise.all(
-        this.handlers.map(async (h) =>
-          (await h.canHandleRequest(request)) ? h : null,
-        ),
-      ).then((results) => results.find((h) => h !== null));
+        this.handlers.map(async (h) => ({
+          handler: h,
+          canHandle: await h.canHandleRequest(request),
+        })),
+      ).then((results) => results.find((result) => result.canHandle)?.handler);
 
       if (appropriateHandler) {
         handler = appropriateHandler;
