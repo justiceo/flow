@@ -1,6 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import { ChatGptLog } from "./log-processors/chatgpt-log";
+import { GrokLog } from "./log-processors/grok-log";
 import { Transport } from "./transports/transport";
 // import { GeminiLog } from "./log-processors/gemini-log";
 import {
@@ -23,7 +24,7 @@ class Flow {
   private defaultHandler: LogProcessor = new ChatGptLog();
   private handlers: LogProcessor[] = [
     this.defaultHandler,
-    // new GrokLog(),
+    new GrokLog(),
     // TODO: Add Gemini and Llama after updating their log processors.
   ];
 
@@ -92,9 +93,12 @@ class Flow {
     let handler = this.defaultHandler;
     const request = buffer.find((e) => e.type === LogEntryType.REQUEST);
     if (request) {
-      const appropriateHandler = this.handlers.find((h) =>
-        h.canHandleRequest(request),
-      );
+      const appropriateHandler = await Promise.all(
+        this.handlers.map(async (h) =>
+          (await h.canHandleRequest(request)) ? h : null,
+        ),
+      ).then((results) => results.find((h) => h !== null));
+
       if (appropriateHandler) {
         handler = appropriateHandler;
       }
