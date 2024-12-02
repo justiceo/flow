@@ -4,6 +4,7 @@ import { ChatGptLog } from "./log-processors/chatgpt-log";
 import { Transport } from "./transports/transport";
 import { LogEntry, BufferEntry, LogEntryType } from "./log-entry";
 import { LogProcessor } from "./log-processors/log-processor";
+import { GrokLog } from "./log-processors/grok-log";
 
 class Flow {
   private buffer: BufferEntry[] = [];
@@ -11,10 +12,8 @@ class Flow {
   private currentRequestId: string | undefined = undefined;
   private static instance: Flow | null = null;
   private defaultHandler: LogProcessor = new ChatGptLog();
-  private handlers: LogProcessor[] = [
-    this.defaultHandler,
-    // TODO: Add Gemini and Llama after updating their log processors.
-  ];
+
+  private handlers: LogProcessor[] = [this.defaultHandler, new GrokLog()];
 
   static getInstance(): Flow {
     if (!Flow.instance) {
@@ -52,11 +51,7 @@ class Flow {
   }
 
   logError(error: any): void {
-    this.log(LogEntryType.ERROR, {
-      error_message: error.message,
-      error_type: error.type,
-      stack: error.stack,
-    });
+    this.log(LogEntryType.ERROR, error);
   }
 
   log(key: string | LogEntryType, data: any): void {
