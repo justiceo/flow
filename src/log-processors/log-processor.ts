@@ -4,6 +4,7 @@ import {
   Response,
   FunctionCallResult,
   Meta,
+  Error,
 } from "../log-entry";
 
 /** LogProcessor converts buffer entry from model-specific format to a standard format. */
@@ -15,5 +16,5 @@ export interface LogProcessor {
     buffer: Readonly<BufferEntry[]>,
   ): Promise<FunctionCallResult>;
   processMeta(buffer: Readonly<BufferEntry[]>): Promise<Meta>;
-  processError(buffer: Readonly<BufferEntry[]>): Promise<string>;
+  processError(buffer: Readonly<BufferEntry[]>): Promise<Error>;
 }

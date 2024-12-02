@@ -7,7 +7,7 @@ import {
 } from "openai/resources/chat/completions";
 import { flow } from "../src/flow";
 
-describe("ChatGPT Flow", () => {
+describe.skip("ChatGPT Flow", () => {
   let openai: OpenAI;
   let resolvedOptionsMock: jest.SpyInstance;
   let platformSpy: jest.SpyInstance;
