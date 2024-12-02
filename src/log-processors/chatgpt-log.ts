@@ -6,6 +6,7 @@ import {
   Request,
   Response,
   FunctionCallResult,
+  Error,
   Meta,
 } from "../log-entry";
 import { getModelCost } from "../costs/cost";
@@ -110,7 +111,7 @@ export class ChatGptLog implements LogProcessor {
     };
   }
 
-  async processError(buffer: Readonly<BufferEntry[]>): Promise<string> {
+  async processError(buffer: Readonly<BufferEntry[]>): Promise<Error> {
     const error = buffer.find((e) => e.type === LogEntryType.ERROR);
 
     return error?.data;
