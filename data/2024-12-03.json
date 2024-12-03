@@ -1,0 +1,40 @@
+[
+  {
+    "requestId": "m48t78hozwrfmy7vs4j",
+    "sessionId": "m48t78hozwrfmy7vs4j",
+    "request": {
+      "prompt": "In which continent is Nigeria?",
+      "model": "gpt-4o-mini",
+      "temperature": 0.7,
+      "topP": 0.3,
+      "maxTokens": 150,
+      "errorReason": ""
+    },
+    "response": {
+      "text": "Nigeria is located in Africa.",
+      "finishReason": "stop",
+      "tokenCount": 19,
+      "status": 200,
+      "startTime": "2024-12-03T18:45:15.326Z",
+      "endTime": "2024-12-03T18:45:19.672Z",
+      "errorReason": ""
+    },
+    "functionCallResult": {
+      "exitCode": 0
+    },
+    "meta": {
+      "totalTokenCount": 19,
+      "inputTokenCost1k": 0.0015,
+      "outputTokenCost1k": 0.006,
+      "triggerSource": "",
+      "userId": "",
+      "locale": "en-TEST",
+      "userTimeZone": "MockTimeZone",
+      "operatingSystem": "darwin/MockedRelease",
+      "shell": "/bin/fakeshell",
+      "memory": 0,
+      "machineId": "bdb7e427269f249517f77a7db88829191951f3b5a19e51e4b24e806a2a6501b8",
+      "env": "test"
+    }
+  }
+]

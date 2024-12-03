@@ -7,6 +7,7 @@ import {
   Response,
   FunctionCallResult,
   Meta,
+  Error,
 } from "../log-entry";
 import { getModelCost } from "../costs/cost";
 import { LogProcessor } from "./log-processor";
@@ -94,6 +95,10 @@ export class ChatGptLog implements LogProcessor {
       (entry) => entry.type === LogEntryType.RESPONSE,
     )?.data?.usage?.total_tokens;
 
+    const { latency_propmt_req, latency_req_res, latency_function_calls } =
+      calcLatency(buffer);
+    const requestCost = await calcRequestCost(buffer);
+
     return {
       totalTokenCount: tokenCount,
       inputTokenCost1k: modelCost?.tokensInCost,
@@ -107,12 +112,78 @@ export class ChatGptLog implements LogProcessor {
       memory: 0,
       machineId: machineIdSync(),
       env: process.env.NODE_ENV || "development",
+      latency_propmt_req: latency_propmt_req,
+      latency_req_res: latency_req_res,
+      latency_function_calls: latency_function_calls,
+      requestCost: requestCost,
     };
   }
 
-  async processError(buffer: Readonly<BufferEntry[]>): Promise<string> {
+  async processError(buffer: Readonly<BufferEntry[]>): Promise<Error> {
     const error = buffer.find((e) => e.type === LogEntryType.ERROR);
 
-    return error?.data;
+    return {
+      error_message: error?.data.message,
+    };
   }
 }
+
+// Function calculate latency between prompt, request and response, function calls, and streaming responses
+const calcLatency = (buffer: Readonly<BufferEntry[]>) => {
+  // Timestamp for prompt log entry
+  const promptTimestamp = buffer.find(
+    (entry) => entry.type === LogEntryType.PROMPT,
+  )?.timestamp;
+  // Timestamp for request log entry
+  const requestTimestamp = buffer.find(
+    (entry) => entry.type === LogEntryType.REQUEST,
+  )?.timestamp;
+  // Timestamp for response log entry
+  const responseTimestamp = buffer.find(
+    (entry) => entry.type === LogEntryType.RESPONSE,
+  )?.timestamp;
+
+  const functionCallResultStartTime = buffer.find(
+    (e) => e.type === LogEntryType.FUNCTION_CALL_RESULT,
+  )?.data.start_time;
+
+  const functionCallResultEndTime = buffer.find(
+    (e) => e.type === LogEntryType.FUNCTION_CALL_RESULT,
+  )?.data.end_time;
+
+  return {
+    latency_propmt_req:
+      promptTimestamp && requestTimestamp
+        ? new Date(requestTimestamp).getTime() -
+          new Date(promptTimestamp).getTime()
+        : 0,
+    latency_req_res:
+      requestTimestamp && responseTimestamp
+        ? new Date(responseTimestamp).getTime() -
+          new Date(requestTimestamp).getTime()
+        : 0,
+    latency_function_calls:
+      functionCallResultStartTime && functionCallResultEndTime
+        ? new Date(functionCallResultEndTime).getTime() -
+          new Date(functionCallResultStartTime).getTime()
+        : 0,
+  };
+};
+
+const calcRequestCost = async (buffer: Readonly<BufferEntry[]>) => {
+  const model = buffer.find((entry) => entry.type === LogEntryType.REQUEST)
+    ?.data?.model;
+  const modelCost = await getModelCost(model);
+
+  const inputToken = buffer.find((e) => e.type === LogEntryType.RESPONSE)?.data
+    ?.usage?.prompt_tokens;
+  const outputToken = buffer.find((e) => e.type === LogEntryType.RESPONSE)?.data
+    ?.usage?.completion_tokens;
+  const inputTokenCost = modelCost?.tokensInCost;
+  const outputTokenCost = modelCost?.tokensOutCost;
+
+  const requestCost =
+    inputToken * inputTokenCost + outputToken * outputTokenCost;
+
+  return requestCost;
+};
