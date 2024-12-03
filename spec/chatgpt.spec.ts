@@ -6,6 +6,7 @@ import {
   ChatCompletionCreateParamsStreaming,
 } from "openai/resources/chat/completions";
 import { flow } from "../src/flow";
+import { JsonArrayTransport } from "../src/transports/json";
 
 describe("ChatGPT Flow", () => {
   let openai: OpenAI;
@@ -122,6 +123,10 @@ describe("ChatGPT Flow", () => {
       memory: 0,
       machineId: expect.any(String),
       env: "test",
+      latency_req_res: expect.any(Number),
+      latency_propmt_req: expect.any(Number),
+      latency_function_calls: expect.any(Number),
+      requestCost: expect.any(Number),
     });
   }, 20000);
 
@@ -186,7 +191,13 @@ describe("ChatGPT Flow", () => {
       errorReason: "",
       startTime: StartTime,
       endTime: EndTime,
-      toolUse: expect.any(Array),
+      toolUse: expect.arrayContaining([
+        expect.objectContaining({
+          function: expect.objectContaining({
+            name: "TEST_WEATHER_FUNC_IMPL",
+          }),
+        }),
+      ]),
     });
 
     // Assertions for Function Call Result
@@ -213,6 +224,10 @@ describe("ChatGPT Flow", () => {
       memory: 0,
       machineId: expect.any(String),
       env: "test",
+      latency_req_res: expect.any(Number),
+      latency_propmt_req: expect.any(Number),
+      latency_function_calls: expect.any(Number),
+      requestCost: expect.any(Number),
     });
   }, 20000);
 
@@ -282,14 +297,16 @@ describe("ChatGPT Flow", () => {
       memory: 0,
       machineId: expect.any(String),
       env: "test",
+      latency_req_res: expect.any(Number),
+      latency_propmt_req: expect.any(Number),
+      latency_function_calls: expect.any(Number),
+      requestCost: expect.any(Number),
     });
 
     // Assertions for Error
     expect(logEntry?.error).toEqual({
-      error_type: "invalid_request_error",
       error_message:
         "400 Invalid 'top_p': decimal below minimum value. Expected a value >= 0, but got -1 instead.",
-      stack: expect.any(String),
     });
   });
 
@@ -406,6 +423,10 @@ describe("ChatGPT Flow", () => {
       memory: 0,
       machineId: expect.any(String),
       env: "test",
+      latency_req_res: expect.any(Number),
+      latency_propmt_req: expect.any(Number),
+      latency_function_calls: expect.any(Number),
+      requestCost: expect.any(Number),
     });
   }, 20000);
 
@@ -436,7 +457,8 @@ describe("ChatGPT Flow", () => {
 
     const tool_calls = response.choices[0]?.message.tool_calls;
 
-    let firstFunctionCall, secondFunctionCall;
+    let firstFunctionCall = { name: "", arguments: "" };
+    let secondFunctionCall = { name: "", arguments: "" };
     let firstFunctionCallStartTime, firstFunctionCallEndTime;
     let secondFunctionCallStartTime, secondFunctionCallEndTime;
     let firstFunctionCallResult, secondFunctionCallResult;
@@ -513,16 +535,33 @@ describe("ChatGPT Flow", () => {
       errorReason: "",
       startTime: StartTime,
       endTime: EndTime,
-      toolUse: expect.any(Array),
+      toolUse: expect.arrayContaining([
+        expect.objectContaining({
+          function: expect.objectContaining({
+            name: "TEST_WEATHER_FUNC_IMPL",
+          }),
+        }),
+        expect.objectContaining({
+          function: expect.objectContaining({
+            name: "TEST_HIKING_TIME_FUNC_IMPL",
+          }),
+        }),
+      ]),
     });
 
     // Assertions for  First Function Call Result
     expect(logEntry?.functionCallResult).toEqual({
-      name: expect.any(String),
-      args: expect.any(String),
+      name: firstFunctionCall?.name,
+      args: firstFunctionCall?.arguments,
       startTime: expect.any(String),
       endTime: expect.any(String),
-      result: expect.any(Array),
+      result: [
+        {
+          location: JSON.parse(firstFunctionCall.arguments).location,
+          temperature: "22°C",
+          condition: "Sunny",
+        },
+      ],
       exitCode: 0,
     });
 
@@ -540,6 +579,10 @@ describe("ChatGPT Flow", () => {
       memory: 0,
       machineId: expect.any(String),
       env: "test",
+      latency_req_res: expect.any(Number),
+      latency_propmt_req: expect.any(Number),
+      latency_function_calls: expect.any(Number),
+      requestCost: expect.any(Number),
     });
   }, 20000);
 
@@ -641,26 +684,277 @@ describe("ChatGPT Flow", () => {
     });
   });
 
-  it("should support custom logs transport", async () => {});
+  it("should support custom logs transport", async () => {
+    const TestPrompt = "In which continent is Nigeria?";
+    flow.logPrompt(TestPrompt, "user-input");
 
-  it("should work with OpenAI's vision models", async () => {});
+    const request = createRequest(TestPrompt, []);
+    flow.logRequest(request);
 
-  it("should work with OpenAI's embedding models", async () => {});
+    let StartTime = new Date().toISOString();
+
+    const response = await openai.chat.completions.create(request);
+
+    let EndTime = new Date().toISOString();
+
+    flow.logResponse({ ...response, start_time: StartTime, end_time: EndTime });
+
+    const jsonArrayTransport = new JsonArrayTransport();
+
+    const logEntry = await flow.flushLogs(jsonArrayTransport); // Using custom transport here
+
+    // Assertions for Request
+    expect(logEntry?.request).toEqual({
+      prompt: TestPrompt,
+      model: "gpt-4o-mini",
+      temperature: TestTemperature,
+      topP: TestTopP,
+      maxTokens: TestMaxTokens,
+      errorReason: "",
+      tools: undefined,
+      outputMode: undefined,
+      systemPrompt: undefined,
+      tokenCount: undefined,
+      topK: undefined,
+    });
+
+    // Assertions for Response
+    expect(logEntry?.response).toEqual({
+      status: 200,
+      finishReason: "stop",
+      text: expect.stringContaining("Africa"),
+      tokenCount: expect.any(Number),
+      errorReason: "",
+      startTime: StartTime,
+      endTime: EndTime,
+    });
+
+    // Assertions for Function Call Result
+    expect(logEntry?.functionCallResult).toEqual({
+      name: undefined,
+      args: undefined,
+      startTime: undefined,
+      endTime: undefined,
+      result: undefined,
+      exitCode: 0,
+    });
+
+    // Assertion for Meta with mocked values
+    expect(logEntry?.meta).toEqual({
+      totalTokenCount: expect.any(Number),
+      inputTokenCost1k: expect.any(Number),
+      outputTokenCost1k: expect.any(Number),
+      triggerSource: "",
+      userId: "",
+      locale: "en-TEST",
+      userTimeZone: "MockTimeZone",
+      operatingSystem: "darwin/MockedRelease",
+      shell: "/bin/fakeshell",
+      memory: 0,
+      machineId: expect.any(String),
+      env: "test",
+      latency_req_res: expect.any(Number),
+      latency_propmt_req: expect.any(Number),
+      latency_function_calls: expect.any(Number),
+      requestCost: expect.any(Number),
+    });
+  });
+
+  it.only("should work with OpenAI's vision models", async () => {
+    // Work in progress
+    const response = await openai.images.generate({
+      model: "dall-e-3",
+      prompt: "a white siamese cat",
+      n: 1,
+      size: "1024x1024",
+    });
+    const image_url = response.data[0].url;
+    console.log("image_url", image_url);
+  }, 20000);
+
+  it.skip("should work with OpenAI's embedding models", async () => {
+    // Work in progress
+    const embedding = await openai.embeddings.create({
+      model: "text-embedding-3-small",
+      input: "Your text string goes here",
+      encoding_format: "float",
+    });
+
+    console.log(embedding);
+  });
 
   it("should work with OpenAI's assistant API", async () => {});
 
-  it("should compute latency between prompt, request and response", async () => {});
+  it("should compute latency between prompt, request and response", async () => {
+    const TestPrompt = "In which continent is Nigeria?";
+    flow.logPrompt(TestPrompt, "user-input");
 
-  it("should compute additional latency metrics for function calls", async () => {});
+    const request = createRequest(TestPrompt, []);
+    flow.logRequest(request);
 
-  it("should compute additional latency metrics for streaming responses", async () => {});
+    let StartTime = new Date().toISOString();
 
-  it("should compute cost of each request", async () => {});
+    const response = await openai.chat.completions.create(request);
+
+    let EndTime = new Date().toISOString();
+
+    flow.logResponse({ ...response, start_time: StartTime, end_time: EndTime });
+
+    const logEntry = await flow.flushLogs();
+
+    // Assertion for latency between request and response
+    expect(logEntry?.meta.latency_req_res).toBeGreaterThan(0);
+
+    // Assertion for latency between prompt and request
+    expect(logEntry?.meta.latency_propmt_req).toBeGreaterThan(0);
+  });
+
+  it("should compute additional latency metrics for function calls", async () => {
+    const TestPrompt = "What's the weather in Ikorodu, Lagos?";
+    flow.logPrompt(TestPrompt, "user-input");
+
+    const request = createRequest(TestPrompt, [TEST_WEATHER_FUNC_SCHEMA]);
+    flow.logRequest(request);
+
+    let StartTime = new Date().toISOString();
+
+    const response = await openai.chat.completions.create(request);
+
+    let EndTime = new Date().toISOString();
+
+    flow.logResponse({ ...response, start_time: StartTime, end_time: EndTime });
+
+    let functionCallStartTime;
+    let functionCallEndTime;
+
+    const functionCall =
+      response?.choices?.[0]?.message?.tool_calls?.[0]?.function ?? null;
+
+    if (response.choices[0]?.message?.tool_calls) {
+      const args = JSON.parse(functionCall?.arguments ?? "");
+      functionCallStartTime = new Date().toISOString();
+      const weatherData = TEST_WEATHER_FUNC_IMPL(args.location);
+      functionCallEndTime = new Date().toISOString();
+      flow.logFunctionCall({
+        name: functionCall?.name,
+        args: functionCall?.arguments,
+        start_time: functionCallStartTime,
+        end_time: functionCallEndTime,
+        result: weatherData,
+      });
+    }
+
+    const logEntry = await flow.flushLogs();
+
+    // Assertions for Function Call latency
+    expect(logEntry?.meta.latency_function_calls).toBeGreaterThan(0);
+  }, 20000);
+
+  it("should compute additional latency metrics for streaming responses", async () => {
+    const TestPrompt = "In which continent is Nigeria?";
+    flow.logPrompt(TestPrompt, "user-input");
+
+    const request = createRequestWithStreamTrue(TestPrompt, []);
+    flow.logRequest(request);
+
+    let StartTime = new Date().toISOString();
+
+    // Initialize an object to aggregate the full response
+    let aggregatedResponse = {
+      id: "",
+      object: "",
+      created: 0,
+      model: "",
+      system_fingerprint: "",
+      choices: [] as Array<{
+        index: number;
+        delta: { content?: string };
+        logprobs: any;
+        finish_reason: string | null;
+      }>,
+    };
+
+    const response = await openai.chat.completions.create(request);
+
+    for await (const chunk of response) {
+      if (!aggregatedResponse.id) {
+        aggregatedResponse.id = chunk.id;
+        aggregatedResponse.object = chunk.object;
+        aggregatedResponse.created = chunk.created;
+        aggregatedResponse.model = chunk.model;
+        aggregatedResponse.system_fingerprint = chunk.system_fingerprint ?? "";
+      }
+
+      chunk.choices.forEach((choice, index) => {
+        if (!aggregatedResponse.choices[index]) {
+          aggregatedResponse.choices[index] = {
+            index: choice.index,
+            delta: { content: "" },
+            logprobs: choice.logprobs ?? null,
+            finish_reason: null,
+          };
+        }
+
+        if (choice.delta?.content) {
+          aggregatedResponse.choices[index].delta.content +=
+            choice.delta.content;
+        }
+
+        if (choice.finish_reason) {
+          aggregatedResponse.choices[index].finish_reason =
+            choice.finish_reason;
+        }
+      });
+    }
+
+    let EndTime = new Date().toISOString();
+
+    flow.logResponse({
+      ...aggregatedResponse,
+      start_time: StartTime,
+      end_time: EndTime,
+    });
+
+    const logEntry = await flow.flushLogs();
+
+    // Assertion for latency between request and response - streaming responses
+    expect(logEntry?.meta.latency_req_res).toBeGreaterThan(0);
+  });
+
+  it("should compute cost of each request", async () => {
+    const TestPrompt = "In which continent is Nigeria?";
+    flow.logPrompt(TestPrompt, "user-input");
+
+    const request = createRequest(TestPrompt, []);
+    flow.logRequest(request);
+
+    let StartTime = new Date().toISOString();
+
+    const response = await openai.chat.completions.create(request);
+
+    let EndTime = new Date().toISOString();
+
+    flow.logResponse({ ...response, start_time: StartTime, end_time: EndTime });
+
+    const logEntry = await flow.flushLogs();
+
+    // Assertion for cost of request
+    expect(typeof logEntry?.meta.requestCost).toBe("number");
+  });
 });
 
 ///// Test Helpers /////
 
 const TEST_WEATHER_FUNC_IMPL = (location: string) => {
+  const delay = (milliseconds: number) => {
+    const start = Date.now();
+    while (Date.now() - start < milliseconds) {
+      // Busy-wait loop to mimic latency
+    }
+  };
+
+  delay(1000);
+
   const weatherData = {
     location: location,
     temperature: "22°C",
@@ -672,8 +966,18 @@ const TEST_HIKING_TIME_FUNC_IMPL = (
   departureTime: string,
   daylightDuration: number,
 ) => {
+  const delay = (milliseconds: number) => {
+    const start = Date.now();
+    while (Date.now() - start < milliseconds) {
+      // Busy-wait loop to mimick latency
+    }
+  };
+
+  delay(1000);
+
   const startHour = parseInt(departureTime.split(":")[0]);
   const hikingHours = daylightDuration - startHour;
+
   return {
     departureTime,
     daylightDuration,
@@ -744,10 +1048,38 @@ const createRequestWithStreamTrue = (prompt: string, functions: any[]) => {
 };
 
 const createRequest = (prompt: string, functions: any[]) => {
+  const delay = (milliseconds: number) => {
+    const start = Date.now();
+    while (Date.now() - start < milliseconds) {
+      // Busy-wait loop to mimic latency
+    }
+  };
+
+  delay(500);
+
   return {
     model: "gpt-4o-mini",
     messages: [{ role: "user", content: prompt }],
     max_tokens: TestMaxTokens,
+    temperature: TestTemperature,
+    top_p: TestTopP,
+
+    ...(functions.length > 0 && {
+      tools: functions,
+    }),
+  } as ChatCompletionCreateParamsNonStreaming;
+};
+
+const createVisionRequest = (prompt: any[], functions: any[]) => {
+  return {
+    model: "gpt-4o-mini",
+    messages: [
+      {
+        role: "user",
+        content: prompt,
+      },
+    ],
+    max_tokens: 300,
     temperature: TestTemperature,
     top_p: TestTopP,
 

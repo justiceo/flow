@@ -17,7 +17,6 @@ export async function getModelCost(modelName: string) {
     // Return null if model is not found
     return null;
   } catch (error) {
-    console.error("Error reading or parsing file:", error);
     return null;
   }
 }
