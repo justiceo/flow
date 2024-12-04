@@ -1,0 +1,673 @@
+[
+  {
+    "requestId": "m49io93jlvacdoegbg",
+    "sessionId": "m49io46d353x69xvoq2",
+    "request": {
+      "prompt": "In which continent is Nigeria?",
+      "model": "gpt-4o-mini",
+      "temperature": 0.7,
+      "topP": 0.3,
+      "maxTokens": 150,
+      "errorReason": ""
+    },
+    "response": {
+      "text": "Nigeria is located in Africa.",
+      "finishReason": "stop",
+      "tokenCount": 19,
+      "status": 200,
+      "startTime": "2024-12-04T06:38:19.663Z",
+      "endTime": "2024-12-04T06:38:20.392Z",
+      "errorReason": ""
+    },
+    "functionCallResult": {
+      "exitCode": 0
+    },
+    "meta": {
+      "totalTokenCount": 19,
+      "inputTokenCost1k": 0.0015,
+      "outputTokenCost1k": 0.006,
+      "triggerSource": "",
+      "userId": "",
+      "locale": "en-TEST",
+      "userTimeZone": "MockTimeZone",
+      "operatingSystem": "darwin/MockedRelease",
+      "shell": "/bin/fakeshell",
+      "memory": 0,
+      "machineId": "bdb7e427269f249517f77a7db88829191951f3b5a19e51e4b24e806a2a6501b8",
+      "env": "test",
+      "latency_req_res": 729,
+      "latency_function_calls": 0
+    }
+  },
+  {
+    "requestId": "m49xik05n0qy4wa3dfm",
+    "sessionId": "m49xieye62zrjlq0amm",
+    "request": {
+      "prompt": "In which continent is Nigeria?",
+      "model": "gpt-4o-mini",
+      "temperature": 0.7,
+      "topP": 0.3,
+      "maxTokens": 150,
+      "errorReason": ""
+    },
+    "response": {
+      "text": "Nigeria is located in Africa.",
+      "finishReason": "stop",
+      "tokenCount": 19,
+      "status": 200,
+      "startTime": "2024-12-04T13:33:48.101Z",
+      "endTime": "2024-12-04T13:33:49.106Z",
+      "errorReason": ""
+    },
+    "functionCallResult": {
+      "exitCode": 0
+    },
+    "meta": {
+      "totalTokenCount": 19,
+      "inputTokenCost1k": 0.0015,
+      "outputTokenCost1k": 0.006,
+      "triggerSource": "",
+      "userId": "",
+      "locale": "en-TEST",
+      "userTimeZone": "MockTimeZone",
+      "operatingSystem": "darwin/MockedRelease",
+      "shell": "/bin/fakeshell",
+      "memory": 0,
+      "machineId": "bdb7e427269f249517f77a7db88829191951f3b5a19e51e4b24e806a2a6501b8",
+      "env": "test",
+      "latency_propmt_req": 0,
+      "latency_req_res": 1005,
+      "latency_function_calls": 0,
+      "requestCost": 0.05550000000000001
+    }
+  },
+  {
+    "requestId": "m49xroxsm1mcjha0jhn",
+    "sessionId": "m49xrc44li7c5c4i7pb",
+    "request": {
+      "prompt": "In which continent is Nigeria?",
+      "model": "gpt-4o-mini",
+      "temperature": 0.7,
+      "topP": 0.3,
+      "maxTokens": 150,
+      "errorReason": ""
+    },
+    "response": {
+      "text": "Nigeria is located in Africa.",
+      "finishReason": "stop",
+      "tokenCount": 19,
+      "status": 200,
+      "startTime": "2024-12-04T13:40:54.400Z",
+      "endTime": "2024-12-04T13:40:55.138Z",
+      "errorReason": ""
+    },
+    "functionCallResult": {
+      "exitCode": 0
+    },
+    "meta": {
+      "totalTokenCount": 19,
+      "inputTokenCost1k": 0.0015,
+      "outputTokenCost1k": 0.006,
+      "triggerSource": "",
+      "userId": "",
+      "locale": "en-TEST",
+      "userTimeZone": "MockTimeZone",
+      "operatingSystem": "darwin/MockedRelease",
+      "shell": "/bin/fakeshell",
+      "memory": 0,
+      "machineId": "bdb7e427269f249517f77a7db88829191951f3b5a19e51e4b24e806a2a6501b8",
+      "env": "test",
+      "latency_propmt_req": 0,
+      "latency_req_res": 738,
+      "latency_function_calls": 0,
+      "requestCost": 0.05550000000000001
+    }
+  },
+  {
+    "requestId": "m49xta5isetuar2albn",
+    "sessionId": "m49xsuptiar37p7mcuk",
+    "request": {
+      "prompt": "In which continent is Nigeria?",
+      "model": "gpt-4o-mini",
+      "temperature": 0.7,
+      "topP": 0.3,
+      "maxTokens": 150,
+      "errorReason": ""
+    },
+    "response": {
+      "text": "Nigeria is located in Africa.",
+      "finishReason": "stop",
+      "tokenCount": 19,
+      "status": 200,
+      "startTime": "2024-12-04T13:42:08.551Z",
+      "endTime": "2024-12-04T13:42:09.093Z",
+      "errorReason": ""
+    },
+    "functionCallResult": {
+      "exitCode": 0
+    },
+    "meta": {
+      "totalTokenCount": 19,
+      "inputTokenCost1k": 0.0015,
+      "outputTokenCost1k": 0.006,
+      "triggerSource": "",
+      "userId": "",
+      "locale": "en-TEST",
+      "userTimeZone": "MockTimeZone",
+      "operatingSystem": "darwin/MockedRelease",
+      "shell": "/bin/fakeshell",
+      "memory": 0,
+      "machineId": "bdb7e427269f249517f77a7db88829191951f3b5a19e51e4b24e806a2a6501b8",
+      "env": "test",
+      "latency_propmt_req": 1,
+      "latency_req_res": 542,
+      "latency_function_calls": 0,
+      "requestCost": 0.05550000000000001
+    }
+  },
+  {
+    "requestId": "m4a1bixvxglartnrayc",
+    "sessionId": "m4a1bedassgtq1cicmp",
+    "request": {
+      "prompt": "In which continent is Nigeria?",
+      "model": "gpt-4o-mini",
+      "temperature": 0.7,
+      "topP": 0.3,
+      "maxTokens": 150,
+      "errorReason": ""
+    },
+    "response": {
+      "text": "Nigeria is located in Africa.",
+      "finishReason": "stop",
+      "tokenCount": 19,
+      "status": 200,
+      "startTime": "2024-12-04T15:20:18.595Z",
+      "endTime": "2024-12-04T15:20:19.155Z",
+      "errorReason": ""
+    },
+    "functionCallResult": {
+      "exitCode": 0
+    },
+    "meta": {
+      "totalTokenCount": 19,
+      "inputTokenCost1k": 0.0015,
+      "outputTokenCost1k": 0.006,
+      "triggerSource": "",
+      "userId": "",
+      "locale": "en-TEST",
+      "userTimeZone": "MockTimeZone",
+      "operatingSystem": "darwin/MockedRelease",
+      "shell": "/bin/fakeshell",
+      "memory": 0,
+      "machineId": "bdb7e427269f249517f77a7db88829191951f3b5a19e51e4b24e806a2a6501b8",
+      "env": "test",
+      "latency_propmt_req": 0,
+      "latency_req_res": 560,
+      "latency_function_calls": 0,
+      "requestCost": 0.05550000000000001
+    }
+  },
+  {
+    "requestId": "m4a1fi5ou2xj1u4y5pi",
+    "sessionId": "m4a1fdo89bvc5tvt9md",
+    "request": {
+      "prompt": "In which continent is Nigeria?",
+      "model": "gpt-4o-mini",
+      "temperature": 0.7,
+      "topP": 0.3,
+      "maxTokens": 150,
+      "errorReason": ""
+    },
+    "response": {
+      "text": "Nigeria is located in Africa.",
+      "finishReason": "stop",
+      "tokenCount": 19,
+      "status": 200,
+      "startTime": "2024-12-04T15:23:24.204Z",
+      "endTime": "2024-12-04T15:23:24.714Z",
+      "errorReason": ""
+    },
+    "functionCallResult": {
+      "exitCode": 0
+    },
+    "meta": {
+      "totalTokenCount": 19,
+      "inputTokenCost1k": 0.0015,
+      "outputTokenCost1k": 0.006,
+      "triggerSource": "",
+      "userId": "",
+      "locale": "en-TEST",
+      "userTimeZone": "MockTimeZone",
+      "operatingSystem": "darwin/MockedRelease",
+      "shell": "/bin/fakeshell",
+      "memory": 0,
+      "machineId": "bdb7e427269f249517f77a7db88829191951f3b5a19e51e4b24e806a2a6501b8",
+      "env": "test",
+      "latency_propmt_req": 0,
+      "latency_req_res": 510,
+      "latency_function_calls": 0,
+      "requestCost": 0.05550000000000001
+    }
+  },
+  {
+    "requestId": "m4a1klsqkj4eug1f6wk",
+    "sessionId": "m4a1kgfpyfwk2kf2y5",
+    "request": {
+      "prompt": "In which continent is Nigeria?",
+      "model": "gpt-4o-mini",
+      "temperature": 0.7,
+      "topP": 0.3,
+      "maxTokens": 150,
+      "errorReason": ""
+    },
+    "response": {
+      "text": "Nigeria is located in Africa.",
+      "finishReason": "stop",
+      "tokenCount": 19,
+      "status": 200,
+      "startTime": "2024-12-04T15:27:22.202Z",
+      "endTime": "2024-12-04T15:27:22.790Z",
+      "errorReason": ""
+    },
+    "functionCallResult": {
+      "exitCode": 0
+    },
+    "meta": {
+      "totalTokenCount": 19,
+      "inputTokenCost1k": 0.0015,
+      "outputTokenCost1k": 0.006,
+      "triggerSource": "",
+      "userId": "",
+      "locale": "en-TEST",
+      "userTimeZone": "MockTimeZone",
+      "operatingSystem": "darwin/MockedRelease",
+      "shell": "/bin/fakeshell",
+      "memory": 0,
+      "machineId": "bdb7e427269f249517f77a7db88829191951f3b5a19e51e4b24e806a2a6501b8",
+      "env": "test",
+      "latency_propmt_req": 0,
+      "latency_req_res": 588,
+      "latency_function_calls": 0,
+      "requestCost": 0.05550000000000001
+    }
+  },
+  {
+    "requestId": "m4a1og37qzqgzl6xpw",
+    "sessionId": "m4a1oa5aaju919fm5us",
+    "request": {
+      "prompt": "In which continent is Nigeria?",
+      "model": "gpt-4o-mini",
+      "temperature": 0.7,
+      "topP": 0.3,
+      "maxTokens": 150,
+      "errorReason": ""
+    },
+    "response": {
+      "text": "Nigeria is located in Africa.",
+      "finishReason": "stop",
+      "tokenCount": 19,
+      "status": 200,
+      "startTime": "2024-12-04T15:30:21.427Z",
+      "endTime": "2024-12-04T15:30:22.271Z",
+      "errorReason": ""
+    },
+    "functionCallResult": {
+      "exitCode": 0
+    },
+    "meta": {
+      "totalTokenCount": 19,
+      "inputTokenCost1k": 0.0015,
+      "outputTokenCost1k": 0.006,
+      "triggerSource": "",
+      "userId": "",
+      "locale": "en-TEST",
+      "userTimeZone": "MockTimeZone",
+      "operatingSystem": "darwin/MockedRelease",
+      "shell": "/bin/fakeshell",
+      "memory": 0,
+      "machineId": "bdb7e427269f249517f77a7db88829191951f3b5a19e51e4b24e806a2a6501b8",
+      "env": "test",
+      "latency_propmt_req": 0,
+      "latency_req_res": 844,
+      "latency_function_calls": 0,
+      "requestCost": 0.05550000000000001
+    }
+  },
+  {
+    "requestId": "m4a1wi4l1m30pwgb43r",
+    "sessionId": "m4a1wdcw7mutf4zmehh",
+    "request": {
+      "prompt": "In which continent is Nigeria?",
+      "model": "gpt-4o-mini",
+      "temperature": 0.7,
+      "topP": 0.3,
+      "maxTokens": 150,
+      "errorReason": ""
+    },
+    "response": {
+      "text": "Nigeria is located in Africa.",
+      "finishReason": "stop",
+      "tokenCount": 19,
+      "status": 200,
+      "startTime": "2024-12-04T15:36:37.317Z",
+      "endTime": "2024-12-04T15:36:37.898Z",
+      "errorReason": ""
+    },
+    "functionCallResult": {
+      "exitCode": 0
+    },
+    "meta": {
+      "totalTokenCount": 19,
+      "inputTokenCost1k": 0.0015,
+      "outputTokenCost1k": 0.006,
+      "triggerSource": "",
+      "userId": "",
+      "locale": "en-TEST",
+      "userTimeZone": "MockTimeZone",
+      "operatingSystem": "darwin/MockedRelease",
+      "shell": "/bin/fakeshell",
+      "memory": 0,
+      "machineId": "bdb7e427269f249517f77a7db88829191951f3b5a19e51e4b24e806a2a6501b8",
+      "env": "test",
+      "latency_propmt_req": 0,
+      "latency_req_res": 581,
+      "latency_function_calls": 0,
+      "requestCost": 0.05550000000000001
+    }
+  },
+  {
+    "requestId": "m4a1zp23oqdp3qd273l",
+    "sessionId": "m4a1zfq423yspw71dih",
+    "request": {
+      "prompt": "In which continent is Nigeria?",
+      "model": "gpt-4o-mini",
+      "temperature": 0.7,
+      "topP": 0.3,
+      "maxTokens": 150,
+      "errorReason": ""
+    },
+    "response": {
+      "text": "Nigeria is located in Africa.",
+      "finishReason": "stop",
+      "tokenCount": 19,
+      "status": 200,
+      "startTime": "2024-12-04T15:39:06.267Z",
+      "endTime": "2024-12-04T15:39:07.037Z",
+      "errorReason": ""
+    },
+    "functionCallResult": {
+      "exitCode": 0
+    },
+    "meta": {
+      "totalTokenCount": 19,
+      "inputTokenCost1k": 0.0015,
+      "outputTokenCost1k": 0.006,
+      "triggerSource": "",
+      "userId": "",
+      "locale": "en-TEST",
+      "userTimeZone": "MockTimeZone",
+      "operatingSystem": "darwin/MockedRelease",
+      "shell": "/bin/fakeshell",
+      "memory": 0,
+      "machineId": "bdb7e427269f249517f77a7db88829191951f3b5a19e51e4b24e806a2a6501b8",
+      "env": "test",
+      "latency_propmt_req": 0,
+      "latency_req_res": 770,
+      "latency_function_calls": 0,
+      "requestCost": 0.05550000000000001
+    }
+  },
+  {
+    "requestId": "m4a26xtna3oe1tmlyp7",
+    "sessionId": "m4a26qepkq7scl0kkcq",
+    "request": {
+      "prompt": "In which continent is Nigeria?",
+      "model": "gpt-4o-mini",
+      "temperature": 0.7,
+      "topP": 0.3,
+      "maxTokens": 150,
+      "errorReason": ""
+    },
+    "response": {
+      "text": "Nigeria is located in Africa.",
+      "finishReason": "stop",
+      "tokenCount": 19,
+      "status": 200,
+      "startTime": "2024-12-04T15:44:44.219Z",
+      "endTime": "2024-12-04T15:44:45.161Z",
+      "errorReason": ""
+    },
+    "functionCallResult": {
+      "exitCode": 0
+    },
+    "meta": {
+      "totalTokenCount": 19,
+      "inputTokenCost1k": 0.0015,
+      "outputTokenCost1k": 0.006,
+      "triggerSource": "",
+      "userId": "",
+      "locale": "en-TEST",
+      "userTimeZone": "MockTimeZone",
+      "operatingSystem": "darwin/MockedRelease",
+      "shell": "/bin/fakeshell",
+      "memory": 0,
+      "machineId": "bdb7e427269f249517f77a7db88829191951f3b5a19e51e4b24e806a2a6501b8",
+      "env": "test",
+      "latency_propmt_req": 0,
+      "latency_req_res": 942,
+      "latency_function_calls": 0,
+      "requestCost": 0.05550000000000001
+    }
+  },
+  {
+    "requestId": "m4a28jogdscilmfve0e",
+    "sessionId": "m4a28cgba16nlt4s5od",
+    "request": {
+      "prompt": "In which continent is Nigeria?",
+      "model": "gpt-4o-mini",
+      "temperature": 0.7,
+      "topP": 0.3,
+      "maxTokens": 150,
+      "errorReason": ""
+    },
+    "response": {
+      "text": "Nigeria is located in Africa.",
+      "finishReason": "stop",
+      "tokenCount": 19,
+      "status": 200,
+      "startTime": "2024-12-04T15:45:59.200Z",
+      "endTime": "2024-12-04T15:45:59.889Z",
+      "errorReason": ""
+    },
+    "functionCallResult": {
+      "exitCode": 0
+    },
+    "meta": {
+      "totalTokenCount": 19,
+      "inputTokenCost1k": 0.0015,
+      "outputTokenCost1k": 0.006,
+      "triggerSource": "",
+      "userId": "",
+      "locale": "en-TEST",
+      "userTimeZone": "MockTimeZone",
+      "operatingSystem": "darwin/MockedRelease",
+      "shell": "/bin/fakeshell",
+      "memory": 0,
+      "machineId": "bdb7e427269f249517f77a7db88829191951f3b5a19e51e4b24e806a2a6501b8",
+      "env": "test",
+      "latency_propmt_req": 0,
+      "latency_req_res": 689,
+      "latency_function_calls": 0,
+      "requestCost": 0.05550000000000001
+    }
+  },
+  {
+    "requestId": "m4a2a85qrp0xfslv7h",
+    "sessionId": "m4a2a0sptrs0naccswo",
+    "request": {
+      "prompt": "In which continent is Nigeria?",
+      "model": "gpt-4o-mini",
+      "temperature": 0.7,
+      "topP": 0.3,
+      "maxTokens": 150,
+      "errorReason": ""
+    },
+    "response": {
+      "text": "Nigeria is located in Africa.",
+      "finishReason": "stop",
+      "tokenCount": 19,
+      "status": 200,
+      "startTime": "2024-12-04T15:47:17.582Z",
+      "endTime": "2024-12-04T15:47:18.858Z",
+      "errorReason": ""
+    },
+    "functionCallResult": {
+      "exitCode": 0
+    },
+    "meta": {
+      "totalTokenCount": 19,
+      "inputTokenCost1k": 0.0015,
+      "outputTokenCost1k": 0.006,
+      "triggerSource": "",
+      "userId": "",
+      "locale": "en-TEST",
+      "userTimeZone": "MockTimeZone",
+      "operatingSystem": "darwin/MockedRelease",
+      "shell": "/bin/fakeshell",
+      "memory": 0,
+      "machineId": "bdb7e427269f249517f77a7db88829191951f3b5a19e51e4b24e806a2a6501b8",
+      "env": "test",
+      "latency_propmt_req": 0,
+      "latency_req_res": 1276,
+      "latency_function_calls": 0,
+      "requestCost": 0.05550000000000001
+    }
+  },
+  {
+    "requestId": "m4a2b9w7mrg86r47gxm",
+    "sessionId": "m4a2b33ryhpqhj57l19",
+    "request": {
+      "prompt": "In which continent is Nigeria?",
+      "model": "gpt-4o-mini",
+      "temperature": 0.7,
+      "topP": 0.3,
+      "maxTokens": 150,
+      "errorReason": ""
+    },
+    "response": {
+      "text": "Nigeria is located in Africa.",
+      "finishReason": "stop",
+      "tokenCount": 19,
+      "status": 200,
+      "startTime": "2024-12-04T15:48:06.487Z",
+      "endTime": "2024-12-04T15:48:07.309Z",
+      "errorReason": ""
+    },
+    "functionCallResult": {
+      "exitCode": 0
+    },
+    "meta": {
+      "totalTokenCount": 19,
+      "inputTokenCost1k": 0.0015,
+      "outputTokenCost1k": 0.006,
+      "triggerSource": "",
+      "userId": "",
+      "locale": "en-TEST",
+      "userTimeZone": "MockTimeZone",
+      "operatingSystem": "darwin/MockedRelease",
+      "shell": "/bin/fakeshell",
+      "memory": 0,
+      "machineId": "bdb7e427269f249517f77a7db88829191951f3b5a19e51e4b24e806a2a6501b8",
+      "env": "test",
+      "latency_propmt_req": 0,
+      "latency_req_res": 822,
+      "latency_function_calls": 0,
+      "requestCost": 0.05550000000000001
+    }
+  },
+  {
+    "requestId": "m4a2cmzbabozy33e9gj",
+    "sessionId": "m4a2cdsrxbiak7kq9m",
+    "request": {
+      "prompt": "In which continent is Nigeria?",
+      "model": "gpt-4o-mini",
+      "temperature": 0.7,
+      "topP": 0.3,
+      "maxTokens": 150,
+      "errorReason": ""
+    },
+    "response": {
+      "text": "Nigeria is located in Africa.",
+      "finishReason": "stop",
+      "tokenCount": 19,
+      "status": 200,
+      "startTime": "2024-12-04T15:49:10.603Z",
+      "endTime": "2024-12-04T15:49:11.403Z",
+      "errorReason": ""
+    },
+    "functionCallResult": {
+      "exitCode": 0
+    },
+    "meta": {
+      "totalTokenCount": 19,
+      "inputTokenCost1k": 0.0015,
+      "outputTokenCost1k": 0.006,
+      "triggerSource": "",
+      "userId": "",
+      "locale": "en-TEST",
+      "userTimeZone": "MockTimeZone",
+      "operatingSystem": "darwin/MockedRelease",
+      "shell": "/bin/fakeshell",
+      "memory": 0,
+      "machineId": "bdb7e427269f249517f77a7db88829191951f3b5a19e51e4b24e806a2a6501b8",
+      "env": "test",
+      "latency_propmt_req": 500,
+      "latency_req_res": 800,
+      "latency_function_calls": 0,
+      "requestCost": 0.05550000000000001
+    }
+  },
+  {
+    "requestId": "m4a3fhua0ixl5cxb112o",
+    "sessionId": "m4a3f805ndw6tg0s67o",
+    "request": {
+      "prompt": "In which continent is Nigeria?",
+      "model": "gpt-4o-mini",
+      "temperature": 0.7,
+      "topP": 0.3,
+      "maxTokens": 150,
+      "errorReason": ""
+    },
+    "response": {
+      "text": "Nigeria is located in Africa.",
+      "finishReason": "stop",
+      "tokenCount": 19,
+      "status": 200,
+      "startTime": "2024-12-04T16:19:23.526Z",
+      "endTime": "2024-12-04T16:19:24.529Z",
+      "errorReason": ""
+    },
+    "functionCallResult": {
+      "exitCode": 0
+    },
+    "meta": {
+      "totalTokenCount": 19,
+      "inputTokenCost1k": 0.0015,
+      "outputTokenCost1k": 0.006,
+      "triggerSource": "",
+      "userId": "",
+      "locale": "en-TEST",
+      "userTimeZone": "MockTimeZone",
+      "operatingSystem": "darwin/MockedRelease",
+      "shell": "/bin/fakeshell",
+      "memory": 0,
+      "machineId": "bdb7e427269f249517f77a7db88829191951f3b5a19e51e4b24e806a2a6501b8",
+      "env": "test",
+      "latency_propmt_req": 500,
+      "latency_req_res": 1003,
+      "latency_function_calls": 0,
+      "requestCost": 0.05550000000000001
+    },
+    "error": {}
+  }
+]
