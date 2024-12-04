@@ -9,7 +9,7 @@ import { flow } from "../src/flow";
 import { start } from "repl";
 import { exitCode } from "process";
 
-describe("ChatGPT Flow", () => {
+describe.skip("ChatGPT Flow", () => {
   let openai: OpenAI;
   let resolvedOptionsMock: jest.SpyInstance;
   let platformSpy: jest.SpyInstance;

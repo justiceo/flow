@@ -3,6 +3,7 @@ import path from "path";
 import { ChatGptLog } from "./log-processors/chatgpt-log";
 import { GrokLog } from "./log-processors/grok-log";
 import { Transport } from "./transports/transport";
+import { LlamaLog } from "./log-processors/llama-log";
 // import { GeminiLog } from "./log-processors/gemini-log";
 import {
   LogEntry,
@@ -24,7 +25,9 @@ class Flow {
   private defaultHandler: LogProcessor = new ChatGptLog();
   private handlers: LogProcessor[] = [
     this.defaultHandler,
-    new GrokLog(),
+    new LlamaLog(),
+
+    // new GrokLog(),
     // TODO: Add Gemini and Llama after updating their log processors.
   ];
 
@@ -64,11 +67,7 @@ class Flow {
   }
 
   logError(error: any): void {
-    this.log(LogEntryType.ERROR, {
-      error_message: error.message,
-      error_type: error.type,
-      stack: error.stack,
-    });
+    this.log(LogEntryType.ERROR, error);
   }
 
   log(key: string | LogEntryType, data: any): void {
