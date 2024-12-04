@@ -148,6 +148,14 @@ export interface Meta {
 }
 
 /**
+ * Represents error in a log entry.
+ */
+export interface Error {
+  /** The error message */
+  error_message?: string;
+}
+
+/**
  * Represents a complete log entry.
  */
 export interface LogEntry {
