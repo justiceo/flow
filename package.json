@@ -4,7 +4,7 @@
   "description": "An AI logger and more",
   "main": "flow.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest spec/chatgpt.spec.ts",
     "format": "prettier . --write"
   },
   "type": "module",

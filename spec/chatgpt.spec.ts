@@ -6,8 +6,6 @@ import {
   ChatCompletionCreateParamsStreaming,
 } from "openai/resources/chat/completions";
 import { flow } from "../src/flow";
-import { start } from "repl";
-import { exitCode } from "process";
 
 describe("ChatGPT Flow", () => {
   let openai: OpenAI;
@@ -229,7 +227,6 @@ describe("ChatGPT Flow", () => {
     try {
       await openai.chat.completions.create(request);
     } catch (error: any) {
-      console.log("error", error.message);
       flow.logError(error);
     }
 
@@ -333,7 +330,7 @@ describe("ChatGPT Flow", () => {
     expect(logEntry?.request.prompt).toEqual("Prompt without request");
   });
 
-  it.only("should set request and session IDs for a conversation", async () => {
+  it("should set request and session IDs for a conversation", async () => {
     const TestPrompt = "In which continent is Nigeria?";
     flow.logPrompt(TestPrompt, "user-input");
 
