@@ -1,5 +1,7 @@
 # Flow
 
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/justiceo/flow/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/justiceo/flow/tree/main)
+
 A simple API that enhances your LLM integration with automated logging, jest-like testing, on-demand evals, with meaningful and sliceable analytics.
 
 ## High-level architecture
