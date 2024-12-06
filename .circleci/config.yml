@@ -19,8 +19,8 @@ jobs:
           command: npm run test
           name: Run tests
           environment:
-            OPENAI_API_KEY: ${{ vars.OPENAI_API_KEY }}
-            GEMINI_API_KEY: ${{ vars.GEMINI_API_KEY }}
+            OPENAI_API_KEY: $OPENAI_API_KEY
+            GEMINI_API_KEY: $GEMINI_API_KEY
 
 workflows:
   install_and_test_workflow: # this can be any name you choose
