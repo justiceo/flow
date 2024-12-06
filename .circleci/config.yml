@@ -11,13 +11,16 @@ orbs:
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/workflows/ & https://circleci.com/docs/configuration-reference/#workflows
 workflows:
-  sample: # This is the name of the workflow, feel free to change it to better match your workflow.
-    # Inside the workflow, you define the jobs you want to run.
+  test: # This is the name of the workflow, feel free to change it.
     jobs:
       - node/test:
           # This is the node version to use for the `cimg/node` tag
           # Relevant tags can be found on the CircleCI Developer Hub
           # https://circleci.com/developer/images/image/cimg/node
-          version: '16.10'
+          version: "16.10"
           # If you are using yarn, change the line below from "npm" to "yarn"
           pkg-manager: npm
+          # Environment variables
+          env:
+            OPENAI_API_KEY: ${{ vars.OPENAI_API_KEY }}
+            GEMINI_API_KEY: ${{ vars.GEMINI_API_KEY }}
