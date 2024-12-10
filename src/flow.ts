@@ -28,7 +28,7 @@ class Flow {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
   }
 
-  logPrompt(prompt: string, trigger: string): void {
+  logPrompt(prompt: string | any[], trigger: string): void {
     // This is the beginning of a new request, clear buffer.
     this.buffer = [];
     this.currentRequestId = this.generateUniqueId();
@@ -52,11 +52,7 @@ class Flow {
   }
 
   logError(error: any): void {
-    this.log(LogEntryType.ERROR, {
-      error_message: error.message,
-      error_type: error.type,
-      stack: error.stack,
-    });
+    this.log(LogEntryType.ERROR, error);
   }
 
   log(key: string | LogEntryType, data: any): void {
@@ -103,7 +99,7 @@ class Flow {
     };
   }
 
-  async flushLogs(transport?: Transport): Promise<any> {
+  async flushLogs(transport?: Transport, multiple?: any): Promise<any> {
     if (this.buffer.length === 0) {
       return;
     }
@@ -116,6 +112,13 @@ class Flow {
     if (transport) {
       transport.send(logEntry);
     } else {
+      if (multiple) {
+        // In progress - this will be for cases of multiple log entries
+        const logFileName = `${new Date().toISOString().split("T")[0]}.jsonl`;
+        const logFilePath = path.join("./data", logFileName);
+
+        await fs.writeFile(logFilePath, JSON.stringify(logEntry) + "\n");
+      }
       const logFileName = `${new Date().toISOString().split("T")[0]}.jsonl`;
       const logFilePath = path.join("./data", logFileName);
 

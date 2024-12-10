@@ -101,6 +101,9 @@ export interface FunctionCallResult {
 
   /** The exit code of the function call */
   exitCode?: number;
+
+  /** The latency for for function call */
+  latency?: number;
 }
 
 /**
@@ -145,6 +148,27 @@ export interface Meta {
 
   /** The environment (e.g., "development", "production") */
   env?: string;
+
+  /** The latency between prompt and request */
+  latency_propmt_req: number;
+
+  /** The latency between request and response */
+  latency_req_res?: number;
+
+  /** The latency for function calls */
+  latency_function_calls?: number;
+
+  /** Total request cost */
+  requestCost?: number;
+}
+
+/**
+ * Represents error in a log entry.
+ */
+
+export interface Error {
+  /** The error message */
+  error_message?: string;
 }
 
 /**
@@ -156,9 +180,6 @@ export interface LogEntry {
 
   /** The ID of the session */
   sessionId?: string;
-
-  /* The prompt information */
-  prompt?: string;
 
   /** The request information */
   request?: Request;
