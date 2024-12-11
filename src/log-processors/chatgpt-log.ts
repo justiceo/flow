@@ -50,8 +50,6 @@ export class ChatGptLog implements LogProcessor {
         finishReason: response?.data?.choices[0].finish_reason,
         tokenCount: 0,
         status: 200,
-        startTime: response?.data?.start_time,
-        endTime: response?.data?.end_time,
         errorReason: "",
         toolUse: response?.data.choices[0]?.message?.tool_calls,
       };
@@ -62,8 +60,6 @@ export class ChatGptLog implements LogProcessor {
         finishReason: response?.data?.choices[0].finish_reason,
         tokenCount: response?.data?.usage.total_tokens,
         status: 200,
-        startTime: response?.data?.start_time,
-        endTime: response?.data?.end_time,
         errorReason: "",
         toolUse: response?.data.choices[0]?.message.tool_calls,
       };
@@ -81,8 +77,6 @@ export class ChatGptLog implements LogProcessor {
       name: functionCallResult?.data?.name,
       args: functionCallResult?.data?.args,
       result: functionCallResult?.data?.result,
-      startTime: functionCallResult?.data?.start_time,
-      endTime: functionCallResult?.data?.end_time,
       exitCode: 0,
     };
   }
@@ -97,7 +91,8 @@ export class ChatGptLog implements LogProcessor {
 
     const { latency_propmt_req, latency_req_res, latency_function_calls } =
       calcLatency(buffer);
-    const requestCost = await calcRequestCost(buffer);
+    const { requestCost, inputCost, outputCost } =
+      await calcRequestCost(buffer);
 
     return {
       totalTokenCount: tokenCount,
@@ -115,6 +110,8 @@ export class ChatGptLog implements LogProcessor {
       latency_propmt_req: latency_propmt_req,
       latency_req_res: latency_req_res,
       latency_function_calls: latency_function_calls,
+      inputCost: inputCost,
+      outputCost: outputCost,
       requestCost: requestCost,
     };
   }
@@ -142,14 +139,10 @@ const calcLatency = (buffer: Readonly<BufferEntry[]>) => {
   const responseTimestamp = buffer.find(
     (entry) => entry.type === LogEntryType.RESPONSE,
   )?.timestamp;
-
-  const functionCallResultStartTime = buffer.find(
-    (e) => e.type === LogEntryType.FUNCTION_CALL_RESULT,
-  )?.data.start_time;
-
-  const functionCallResultEndTime = buffer.find(
-    (e) => e.type === LogEntryType.FUNCTION_CALL_RESULT,
-  )?.data.end_time;
+  // Timestamp for function call result
+  const functionCallResultTimestamp = buffer.find(
+    (entry) => entry.type === LogEntryType.FUNCTION_CALL_RESULT,
+  )?.timestamp;
 
   return {
     latency_propmt_req:
@@ -163,9 +156,9 @@ const calcLatency = (buffer: Readonly<BufferEntry[]>) => {
           new Date(requestTimestamp).getTime()
         : 0,
     latency_function_calls:
-      functionCallResultStartTime && functionCallResultEndTime
-        ? new Date(functionCallResultEndTime).getTime() -
-          new Date(functionCallResultStartTime).getTime()
+      responseTimestamp && functionCallResultTimestamp
+        ? new Date(functionCallResultTimestamp).getTime() -
+          new Date(responseTimestamp).getTime()
         : 0,
   };
 };
@@ -179,11 +172,14 @@ const calcRequestCost = async (buffer: Readonly<BufferEntry[]>) => {
     ?.usage?.prompt_tokens;
   const outputToken = buffer.find((e) => e.type === LogEntryType.RESPONSE)?.data
     ?.usage?.completion_tokens;
-  const inputTokenCost = modelCost?.tokensInCost;
-  const outputTokenCost = modelCost?.tokensOutCost;
+  const inputTokenCost10k = modelCost?.tokensInCost;
+  const outputTokenCost10k = modelCost?.tokensOutCost;
+
+  const inputCost = inputToken * inputTokenCost10k; // cost for input tokens
+  const outputCost = outputToken * outputTokenCost10k; // cost for output tokens
 
   const requestCost =
-    inputToken * inputTokenCost + outputToken * outputTokenCost;
+    inputToken * inputTokenCost10k + outputToken * outputTokenCost10k; // total cost for the request
 
-  return requestCost;
+  return { requestCost, inputCost, outputCost };
 };

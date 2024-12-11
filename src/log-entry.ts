@@ -67,12 +67,6 @@ export interface Response {
   /** The number of tokens in the response */
   tokenCount?: number;
 
-  /** The timestamp when the response started */
-  startTime?: number;
-
-  /** The timestamp when the response ended */
-  endTime?: number;
-
   /** The output mode (e.g., "streaming", "schema") */
   outputMode?: string;
 
@@ -92,12 +86,6 @@ export interface FunctionCallResult {
 
   /** The result of the function call */
   result?: string;
-
-  /** The timestamp when the function call started */
-  startTime?: number;
-
-  /** The timestamp when the function call ended */
-  endTime?: number;
 
   /** The exit code of the function call */
   exitCode?: number;
@@ -157,6 +145,12 @@ export interface Meta {
 
   /** The latency for function calls */
   latency_function_calls?: number;
+
+  /** Total input cost */
+  inputCost?: number;
+
+  /** Total output cost */
+  outputCost?: number;
 
   /** Total request cost */
   requestCost?: number;

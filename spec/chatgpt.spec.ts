@@ -63,13 +63,9 @@ describe("ChatGPT Flow", () => {
     const request = createRequest(TestPrompt, []);
     flow.logRequest(request);
 
-    let StartTime = new Date().toISOString();
-
     const response = await openai.chat.completions.create(request);
 
-    let EndTime = new Date().toISOString();
-
-    flow.logResponse({ ...response, start_time: StartTime, end_time: EndTime });
+    flow.logResponse(response);
 
     const logEntry = await flow.flushLogs();
 
@@ -95,16 +91,12 @@ describe("ChatGPT Flow", () => {
       text: expect.stringContaining("Africa"),
       tokenCount: expect.any(Number),
       errorReason: "",
-      startTime: StartTime,
-      endTime: EndTime,
     });
 
     // Assertions for Function Call Result
     expect(logEntry?.functionCallResult).toEqual({
       name: undefined,
       args: undefined,
-      startTime: undefined,
-      endTime: undefined,
       result: undefined,
       exitCode: 0,
     });
@@ -127,6 +119,8 @@ describe("ChatGPT Flow", () => {
       latency_propmt_req: expect.any(Number),
       latency_function_calls: expect.any(Number),
       requestCost: expect.any(Number),
+      inputCost: expect.any(Number),
+      outputCost: expect.any(Number),
     });
   }, 20000);
 
@@ -137,30 +131,19 @@ describe("ChatGPT Flow", () => {
     const request = createRequest(TestPrompt, [TEST_WEATHER_FUNC_SCHEMA]);
     flow.logRequest(request);
 
-    let StartTime = new Date().toISOString();
-
     const response = await openai.chat.completions.create(request);
 
-    let EndTime = new Date().toISOString();
-
-    flow.logResponse({ ...response, start_time: StartTime, end_time: EndTime });
-
-    let functionCallStartTime;
-    let functionCallEndTime;
+    flow.logResponse(response);
 
     const functionCall =
       response?.choices?.[0]?.message?.tool_calls?.[0]?.function ?? null;
 
     if (response.choices[0]?.message?.tool_calls) {
       const args = JSON.parse(functionCall?.arguments ?? "");
-      functionCallStartTime = new Date().toISOString();
       const weatherData = TEST_WEATHER_FUNC_IMPL(args.location);
-      functionCallEndTime = new Date().toISOString();
-      flow.logFunctionCall({
+      flow.logFunctionCallResult({
         name: functionCall?.name,
         args: functionCall?.arguments,
-        start_time: functionCallStartTime,
-        end_time: functionCallEndTime,
         result: weatherData,
       });
     }
@@ -189,8 +172,6 @@ describe("ChatGPT Flow", () => {
       text: null,
       tokenCount: expect.any(Number),
       errorReason: "",
-      startTime: StartTime,
-      endTime: EndTime,
       toolUse: expect.arrayContaining([
         expect.objectContaining({
           function: expect.objectContaining({
@@ -204,8 +185,6 @@ describe("ChatGPT Flow", () => {
     expect(logEntry?.functionCallResult).toEqual({
       name: functionCall?.name,
       args: functionCall?.arguments,
-      startTime: functionCallStartTime,
-      endTime: functionCallEndTime,
       result: expect.anything(),
       exitCode: 0,
     });
@@ -228,6 +207,8 @@ describe("ChatGPT Flow", () => {
       latency_propmt_req: expect.any(Number),
       latency_function_calls: expect.any(Number),
       requestCost: expect.any(Number),
+      inputCost: expect.any(Number),
+      outputCost: expect.any(Number),
     });
   }, 20000);
 
@@ -269,16 +250,12 @@ describe("ChatGPT Flow", () => {
       text: undefined,
       tokenCount: undefined,
       errorReason: "",
-      startTime: undefined,
-      endTime: undefined,
     });
 
     // Assertions for Function Call Result
     expect(logEntry?.functionCallResult).toEqual({
       name: undefined,
       args: undefined,
-      startTime: undefined,
-      endTime: undefined,
       result: undefined,
       exitCode: 0,
     });
@@ -301,6 +278,8 @@ describe("ChatGPT Flow", () => {
       latency_propmt_req: expect.any(Number),
       latency_function_calls: expect.any(Number),
       requestCost: expect.any(Number),
+      inputCost: NaN,
+      outputCost: NaN,
     });
 
     // Assertions for Error
@@ -372,13 +351,9 @@ describe("ChatGPT Flow", () => {
     const request = createRequest(TestPrompt, [TEST_WEATHER_FUNC_SCHEMA]);
     flow.logRequest(request);
 
-    let StartTime = new Date().toISOString();
-
     const response = await openai.chat.completions.create(request);
 
-    let EndTime = new Date().toISOString();
-
-    flow.logResponse({ ...response, start_time: StartTime, end_time: EndTime });
+    flow.logResponse(response);
 
     const logEntry = await flow.flushLogs();
 
@@ -404,8 +379,6 @@ describe("ChatGPT Flow", () => {
       text: null,
       tokenCount: expect.any(Number),
       errorReason: "",
-      startTime: StartTime,
-      endTime: EndTime,
       toolUse: expect.any(Array),
     });
 
@@ -427,6 +400,8 @@ describe("ChatGPT Flow", () => {
       latency_propmt_req: expect.any(Number),
       latency_function_calls: expect.any(Number),
       requestCost: expect.any(Number),
+      inputCost: expect.any(Number),
+      outputCost: expect.any(Number),
     });
   }, 20000);
 
@@ -445,22 +420,15 @@ describe("ChatGPT Flow", () => {
     ]);
     flow.logRequest(request);
 
-    let StartTime = new Date().toISOString();
-
     const response = await openai.chat.completions.create(request);
 
-    // Capture the end time of the response
-    let EndTime = new Date().toISOString();
-
     // Log the response
-    flow.logResponse({ ...response, start_time: StartTime, end_time: EndTime });
+    flow.logResponse(response);
 
     const tool_calls = response.choices[0]?.message.tool_calls;
 
     let firstFunctionCall = { name: "", arguments: "" };
     let secondFunctionCall = { name: "", arguments: "" };
-    let firstFunctionCallStartTime, firstFunctionCallEndTime;
-    let secondFunctionCallStartTime, secondFunctionCallEndTime;
     let firstFunctionCallResult, secondFunctionCallResult;
 
     // Handle function calls
@@ -472,15 +440,11 @@ describe("ChatGPT Flow", () => {
       ) {
         firstFunctionCall = tool_call.function;
         const args = JSON.parse(firstFunctionCall.arguments);
-        firstFunctionCallStartTime = new Date().toISOString();
         firstFunctionCallResult = TEST_WEATHER_FUNC_IMPL(args.location);
-        firstFunctionCallEndTime = new Date().toISOString();
         // Log the first function call results
-        flow.logFunctionCall({
+        flow.logFunctionCallResult({
           name: firstFunctionCall.name,
           args: firstFunctionCall.arguments,
-          start_time: firstFunctionCallStartTime,
-          end_time: firstFunctionCallEndTime,
           result: [firstFunctionCallResult],
         });
       }
@@ -491,18 +455,14 @@ describe("ChatGPT Flow", () => {
       ) {
         secondFunctionCall = tool_call.function;
         const args = JSON.parse(secondFunctionCall.arguments);
-        secondFunctionCallStartTime = new Date().toISOString();
         secondFunctionCallResult = TEST_HIKING_TIME_FUNC_IMPL(
           args.departureTime,
           args.daylightDuration,
         );
-        secondFunctionCallEndTime = new Date().toISOString();
         // Log second function call results
-        flow.logFunctionCall({
+        flow.logFunctionCallResult({
           name: secondFunctionCall.name,
           args: secondFunctionCall.arguments,
-          start_time: secondFunctionCallStartTime,
-          end_time: secondFunctionCallEndTime,
           result: [secondFunctionCallResult],
         });
       }
@@ -533,8 +493,6 @@ describe("ChatGPT Flow", () => {
       text: null,
       tokenCount: expect.any(Number),
       errorReason: "",
-      startTime: StartTime,
-      endTime: EndTime,
       toolUse: expect.arrayContaining([
         expect.objectContaining({
           function: expect.objectContaining({
@@ -553,8 +511,6 @@ describe("ChatGPT Flow", () => {
     expect(logEntry?.functionCallResult).toEqual({
       name: firstFunctionCall?.name,
       args: firstFunctionCall?.arguments,
-      startTime: expect.any(String),
-      endTime: expect.any(String),
       result: [
         {
           location: JSON.parse(firstFunctionCall.arguments).location,
@@ -583,6 +539,8 @@ describe("ChatGPT Flow", () => {
       latency_propmt_req: expect.any(Number),
       latency_function_calls: expect.any(Number),
       requestCost: expect.any(Number),
+      inputCost: expect.any(Number),
+      outputCost: expect.any(Number),
     });
   }, 20000);
 
@@ -596,8 +554,6 @@ describe("ChatGPT Flow", () => {
 
     const request = createRequestWithStreamTrue(TestPrompt, []);
     flow.logRequest(request);
-
-    let StartTime = new Date().toISOString();
 
     // Initialize an object to aggregate the full response
     let aggregatedResponse = {
@@ -647,12 +603,8 @@ describe("ChatGPT Flow", () => {
       });
     }
 
-    let EndTime = new Date().toISOString();
-
     flow.logResponse({
       ...aggregatedResponse,
-      start_time: StartTime,
-      end_time: EndTime,
     });
 
     const logEntry = await flow.flushLogs();
@@ -679,8 +631,6 @@ describe("ChatGPT Flow", () => {
       text: expect.stringContaining("Africa"),
       tokenCount: expect.any(Number),
       errorReason: "",
-      startTime: StartTime,
-      endTime: EndTime,
     });
   });
 
@@ -691,13 +641,9 @@ describe("ChatGPT Flow", () => {
     const request = createRequest(TestPrompt, []);
     flow.logRequest(request);
 
-    let StartTime = new Date().toISOString();
-
     const response = await openai.chat.completions.create(request);
 
-    let EndTime = new Date().toISOString();
-
-    flow.logResponse({ ...response, start_time: StartTime, end_time: EndTime });
+    flow.logResponse(response);
 
     const jsonArrayTransport = new JsonArrayTransport();
 
@@ -725,16 +671,12 @@ describe("ChatGPT Flow", () => {
       text: expect.stringContaining("Africa"),
       tokenCount: expect.any(Number),
       errorReason: "",
-      startTime: StartTime,
-      endTime: EndTime,
     });
 
     // Assertions for Function Call Result
     expect(logEntry?.functionCallResult).toEqual({
       name: undefined,
       args: undefined,
-      startTime: undefined,
-      endTime: undefined,
       result: undefined,
       exitCode: 0,
     });
@@ -757,10 +699,12 @@ describe("ChatGPT Flow", () => {
       latency_propmt_req: expect.any(Number),
       latency_function_calls: expect.any(Number),
       requestCost: expect.any(Number),
+      inputCost: expect.any(Number),
+      outputCost: expect.any(Number),
     });
   });
 
-  it.only("should work with OpenAI's vision models", async () => {
+  it.skip("should work with OpenAI's vision models", async () => {
     // Work in progress
     const response = await openai.images.generate({
       model: "dall-e-3",
@@ -783,7 +727,7 @@ describe("ChatGPT Flow", () => {
     console.log(embedding);
   });
 
-  it("should work with OpenAI's assistant API", async () => {});
+  it.skip("should work with OpenAI's assistant API", async () => {});
 
   it("should compute latency between prompt, request and response", async () => {
     const TestPrompt = "In which continent is Nigeria?";
@@ -792,13 +736,9 @@ describe("ChatGPT Flow", () => {
     const request = createRequest(TestPrompt, []);
     flow.logRequest(request);
 
-    let StartTime = new Date().toISOString();
-
     const response = await openai.chat.completions.create(request);
 
-    let EndTime = new Date().toISOString();
-
-    flow.logResponse({ ...response, start_time: StartTime, end_time: EndTime });
+    flow.logResponse(response);
 
     const logEntry = await flow.flushLogs();
 
@@ -816,30 +756,19 @@ describe("ChatGPT Flow", () => {
     const request = createRequest(TestPrompt, [TEST_WEATHER_FUNC_SCHEMA]);
     flow.logRequest(request);
 
-    let StartTime = new Date().toISOString();
-
     const response = await openai.chat.completions.create(request);
 
-    let EndTime = new Date().toISOString();
-
-    flow.logResponse({ ...response, start_time: StartTime, end_time: EndTime });
-
-    let functionCallStartTime;
-    let functionCallEndTime;
+    flow.logResponse(response);
 
     const functionCall =
       response?.choices?.[0]?.message?.tool_calls?.[0]?.function ?? null;
 
     if (response.choices[0]?.message?.tool_calls) {
       const args = JSON.parse(functionCall?.arguments ?? "");
-      functionCallStartTime = new Date().toISOString();
       const weatherData = TEST_WEATHER_FUNC_IMPL(args.location);
-      functionCallEndTime = new Date().toISOString();
-      flow.logFunctionCall({
+      flow.logFunctionCallResult({
         name: functionCall?.name,
         args: functionCall?.arguments,
-        start_time: functionCallStartTime,
-        end_time: functionCallEndTime,
         result: weatherData,
       });
     }
@@ -856,8 +785,6 @@ describe("ChatGPT Flow", () => {
 
     const request = createRequestWithStreamTrue(TestPrompt, []);
     flow.logRequest(request);
-
-    let StartTime = new Date().toISOString();
 
     // Initialize an object to aggregate the full response
     let aggregatedResponse = {
@@ -907,12 +834,8 @@ describe("ChatGPT Flow", () => {
       });
     }
 
-    let EndTime = new Date().toISOString();
-
     flow.logResponse({
       ...aggregatedResponse,
-      start_time: StartTime,
-      end_time: EndTime,
     });
 
     const logEntry = await flow.flushLogs();
@@ -928,18 +851,51 @@ describe("ChatGPT Flow", () => {
     const request = createRequest(TestPrompt, []);
     flow.logRequest(request);
 
-    let StartTime = new Date().toISOString();
-
     const response = await openai.chat.completions.create(request);
 
-    let EndTime = new Date().toISOString();
-
-    flow.logResponse({ ...response, start_time: StartTime, end_time: EndTime });
+    flow.logResponse(response);
 
     const logEntry = await flow.flushLogs();
 
     // Assertion for cost of request
     expect(typeof logEntry?.meta.requestCost).toBe("number");
+  });
+
+  it("should compute token costs for input and output tokens", async () => {
+    const TestPrompt = "In which continent is Nigeria?";
+    flow.logPrompt(TestPrompt, "user-input");
+
+    const request = createRequest(TestPrompt, []);
+    flow.logRequest(request);
+
+    const response = await openai.chat.completions.create(request);
+
+    flow.logResponse(response);
+
+    const logEntry = await flow.flushLogs();
+
+    // Assertion for input token cost
+    expect(typeof logEntry?.meta.inputCost).toBe("number");
+
+    // Assertion for output token cost
+    expect(typeof logEntry?.meta.outputCost).toBe("number");
+  });
+
+  it("should compute token count for each request", async () => {
+    const TestPrompt = "In which continent is Nigeria?";
+    flow.logPrompt(TestPrompt, "user-input");
+
+    const request = createRequest(TestPrompt, []);
+    flow.logRequest(request);
+
+    const response = await openai.chat.completions.create(request);
+
+    flow.logResponse(response);
+
+    const logEntry = await flow.flushLogs();
+
+    // Assertion for token count
+    expect(typeof logEntry?.response.tokenCount).toBe("number");
   });
 });
 
