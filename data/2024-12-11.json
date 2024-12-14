@@ -1,0 +1,176 @@
+[
+  {
+    "requestId": "m4jc7qwueh0a1wzxpj",
+    "sessionId": "m4jc7g7aavjckpl78k4",
+    "request": {
+      "prompt": "In which continent is Nigeria?",
+      "model": "gpt-4o-mini",
+      "temperature": 0.7,
+      "topP": 0.3,
+      "maxTokens": 150,
+      "errorReason": ""
+    },
+    "response": {
+      "text": "Nigeria is located in Africa.",
+      "finishReason": "stop",
+      "tokenCount": 19,
+      "status": 200,
+      "startTime": "2024-12-11T03:35:14.162Z",
+      "endTime": "2024-12-11T03:35:15.270Z",
+      "errorReason": ""
+    },
+    "functionCallResult": {
+      "exitCode": 0
+    },
+    "meta": {
+      "totalTokenCount": 19,
+      "inputTokenCost1k": 0.0015,
+      "outputTokenCost1k": 0.006,
+      "triggerSource": "",
+      "userId": "",
+      "locale": "en-TEST",
+      "userTimeZone": "MockTimeZone",
+      "operatingSystem": "darwin/MockedRelease",
+      "shell": "/bin/fakeshell",
+      "memory": 0,
+      "machineId": "bdb7e427269f249517f77a7db88829191951f3b5a19e51e4b24e806a2a6501b8",
+      "env": "test",
+      "latency_propmt_req": 500,
+      "latency_req_res": 1108,
+      "latency_function_calls": 0,
+      "inputCost": 0.0195,
+      "outputCost": 0.036000000000000004,
+      "requestCost": 0.05550000000000001
+    },
+    "error": {}
+  },
+  {
+    "requestId": "m4k85axthrymivhccq",
+    "sessionId": "m4k8502xuh9reyfq5a",
+    "request": {
+      "prompt": "In which continent is Nigeria?",
+      "model": "gpt-4o-mini",
+      "temperature": 0.7,
+      "topP": 0.3,
+      "maxTokens": 150,
+      "errorReason": ""
+    },
+    "response": {
+      "text": "Nigeria is located in Africa.",
+      "finishReason": "stop",
+      "tokenCount": 19,
+      "status": 200,
+      "errorReason": ""
+    },
+    "functionCallResult": {
+      "exitCode": 0
+    },
+    "meta": {
+      "totalTokenCount": 19,
+      "inputTokenCost1k": 0.0015,
+      "outputTokenCost1k": 0.006,
+      "triggerSource": "",
+      "userId": "",
+      "locale": "en-TEST",
+      "userTimeZone": "MockTimeZone",
+      "operatingSystem": "darwin/MockedRelease",
+      "shell": "/bin/fakeshell",
+      "memory": 0,
+      "machineId": "bdb7e427269f249517f77a7db88829191951f3b5a19e51e4b24e806a2a6501b8",
+      "env": "test",
+      "latency_propmt_req": 500,
+      "latency_req_res": 907,
+      "latency_function_calls": 0,
+      "inputCost": 0.0195,
+      "outputCost": 0.036000000000000004,
+      "requestCost": 0.05550000000000001
+    },
+    "error": {}
+  },
+  {
+    "requestId": "m4kg67j387mb7dm0q4n",
+    "sessionId": "m4kg5wn9a4azmnbwili",
+    "request": {
+      "prompt": "In which continent is Nigeria?",
+      "model": "gpt-4o-mini",
+      "temperature": 0.7,
+      "topP": 0.3,
+      "maxTokens": 150,
+      "errorReason": ""
+    },
+    "response": {
+      "text": "Nigeria is located in Africa.",
+      "finishReason": "stop",
+      "tokenCount": 19,
+      "status": 200,
+      "errorReason": ""
+    },
+    "functionCallResult": {
+      "exitCode": 0
+    },
+    "meta": {
+      "totalTokenCount": 19,
+      "inputTokenCost1k": 0.0015,
+      "outputTokenCost1k": 0.006,
+      "triggerSource": "",
+      "userId": "",
+      "locale": "en-TEST",
+      "userTimeZone": "MockTimeZone",
+      "operatingSystem": "darwin/MockedRelease",
+      "shell": "/bin/fakeshell",
+      "memory": 0,
+      "machineId": "bdb7e427269f249517f77a7db88829191951f3b5a19e51e4b24e806a2a6501b8",
+      "env": "test",
+      "latency_propmt_req": 500,
+      "latency_req_res": 614,
+      "latency_function_calls": 0,
+      "inputCost": 0.0195,
+      "outputCost": 0.036000000000000004,
+      "requestCost": 0.05550000000000001
+    },
+    "error": {}
+  },
+  {
+    "requestId": "m4kg7o3q6dp5z44217k",
+    "sessionId": "m4kg7drivqykwredyqd",
+    "request": {
+      "prompt": "In which continent is Nigeria?",
+      "model": "gpt-4o-mini",
+      "temperature": 0.7,
+      "topP": 0.3,
+      "maxTokens": 150,
+      "errorReason": ""
+    },
+    "response": {
+      "text": "Nigeria is located in Africa.",
+      "finishReason": "stop",
+      "tokenCount": 19,
+      "status": 200,
+      "errorReason": ""
+    },
+    "functionCallResult": {
+      "exitCode": 0
+    },
+    "meta": {
+      "totalTokenCount": 19,
+      "inputTokenCost1k": 0.0015,
+      "outputTokenCost1k": 0.006,
+      "triggerSource": "",
+      "userId": "",
+      "locale": "en-TEST",
+      "userTimeZone": "MockTimeZone",
+      "operatingSystem": "darwin/MockedRelease",
+      "shell": "/bin/fakeshell",
+      "memory": 0,
+      "machineId": "bdb7e427269f249517f77a7db88829191951f3b5a19e51e4b24e806a2a6501b8",
+      "env": "test",
+      "latency_propmt_req": 500,
+      "latency_req_res": 635,
+      "latency_function_calls": 0,
+      "inputCost": 0.0195,
+      "outputCost": 0.036000000000000004,
+      "requestCost": 0.05550000000000001
+    },
+    "error": {}
+  }
+]
