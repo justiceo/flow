@@ -267,5 +267,195 @@
     },
 
     "updated": "2024-11-14"
+  },
+
+  {
+    "index": 14,
+    "model": "grok-beta",
+    "model_family": "grok",
+    "model_type": "multimodal",
+    "max_request_tokens_per_minute": null,
+    "max_requests_per_minute": null,
+    "request_context_window": 131072,
+    "max_output_tokens": 131072,
+    "input_cost_10k": 0.05,
+    "output_cost_10k": 0.15,
+    "developer": "xAI",
+    "provider": "xAI",
+    "pricing_page": null,
+    "pricing_plan": "Pay-as-you-go",
+    "model_info_page": {
+      "https://openrouter.ai/x-ai/grok-beta": [
+        "request_context_window",
+        "max_output_tokens",
+        "input_cost_10k",
+        "output_cost_10k"
+      ]
+    },
+
+    "updated": "2024-12-11"
+  },
+
+  {
+    "index": 15,
+    "model": "deepseek-chat",
+    "model_family": "deepseek",
+    "model_type": "text",
+    "max_request_tokens_per_minute": null,
+    "max_requests_per_minute": null,
+    "request_context_window": 640000,
+    "max_output_tokens": 4000,
+    "input_cost_10k": 0.0014,
+    "output_cost_10k": 0.0028,
+    "developer": "DeepSeek",
+    "provider": "DeepSeek",
+    "pricing_page": "https://api-docs.deepseek.com/quick_start/pricing",
+    "pricing_plan": "Pay-as-you-go",
+    "model_info_page": {
+      "https://api-docs.deepseek.com/quick_start/pricing": [
+        "max_output_tokens",
+        "input_cost_10k",
+        "output_cost_10k"
+      ]
+    },
+
+    "updated": "2024-12-10"
+  },
+
+  {
+    "index": 16,
+    "model": "amazon.nova-lite-v1:0",
+    "model_family": "nova",
+    "model_type": "multimodal",
+    "max_request_tokens_per_minute": null,
+    "max_requests_per_minute": null,
+    "request_context_window": 3000000,
+    "max_output_tokens": 5000,
+    "input_cost_10k": 0.0006,
+    "output_cost_10k": 0.0024,
+    "developer": "Amazon",
+    "provider": "Amazon",
+    "pricing_page": "https://aws.amazon.com/bedrock/pricing/",
+    "pricing_plan": "Pay-as-you-go",
+    "model_info_page": {
+      "https://docs.aws.amazon.com/nova/latest/userguide/what-is-nova.html": [
+        "max_output_tokens",
+        "request_context_window"
+      ],
+      "https://openrouter.ai/amazon/nova-lite-v1": [
+        "input_cost_10k",
+        "output_cost_10k"
+      ]
+    },
+    "updated": "2024-12-11"
+  },
+
+  {
+    "index": 17,
+    "model": "grok-vision-beta",
+    "model_family": "grok",
+    "model_type": "multimodal",
+    "max_request_tokens_per_minute": null,
+    "max_requests_per_minute": null,
+    "request_context_window": 8192,
+    "max_output_tokens": 8192,
+    "input_cost_10k": 0.05,
+    "output_cost_10k": 0.15,
+    "developer": "xAI",
+    "provider": "xAI",
+    "pricing_page": null,
+    "pricing_plan": "Pay-as-you-go",
+    "model_info_page": {
+      "https://openrouter.ai/x-ai/grok-beta": [
+        "request_context_window",
+        "max_output_tokens",
+        "input_cost_10k",
+        "output_cost_10k"
+      ]
+    },
+
+    "updated": "2024-12-11"
+  },
+
+  {
+    "index": 18,
+    "model": "mistralai/pixtral-large-2411",
+    "model_family": "Mistral",
+    "model_type": "multimodal",
+    "max_request_tokens_per_minute": null,
+    "max_requests_per_minute": null,
+    "request_context_window": 128000,
+    "max_output_tokens": 128000,
+    "input_cost_10k": 0.02,
+    "output_cost_10k": 0.06,
+    "developer": "Mistral",
+    "provider": "Mistral",
+    "pricing_page": "https://mistral.ai/technology/#pricing",
+    "pricing_plan": "Pay-as-you-go",
+    "model_info_page": {
+      "https://openrouter.ai/mistralai/pixtral-large-2411": [
+        "request_context_window",
+        "max_output_tokens",
+        "input_cost_10k",
+        "output_cost_10k"
+      ]
+    },
+
+    "updated": "2024-12-11"
+  },
+
+  {
+    "index": 19,
+    "model": "mistralai/ministral-8b",
+    "model_family": "Mistral",
+    "model_type": "multimodal",
+    "max_request_tokens_per_minute": null,
+    "max_requests_per_minute": null,
+    "request_context_window": 128000,
+    "max_output_tokens": 128000,
+    "input_cost_10k": 0.001,
+    "output_cost_10k": 0.001,
+    "developer": "Mistral",
+    "provider": "Mistral",
+    "pricing_page": "https://mistral.ai/technology/#pricing",
+    "pricing_plan": "Pay-as-you-go",
+    "model_info_page": {
+      "https://openrouter.ai/mistralai/pixtral-large-2411": [
+        "request_context_window",
+        "max_output_tokens",
+        "input_cost_10k",
+        "output_cost_10k"
+      ]
+    },
+
+    "updated": "2024-12-11"
+  },
+
+  {
+    "index": 20,
+    "model": "nvidia/llama-3.1-nemotron-70b-instruct",
+    "model_family": "llama",
+    "model_type": "multimodal",
+    "max_request_tokens_per_minute": null,
+    "max_requests_per_minute": null,
+    "request_context_window": 131072,
+    "max_output_tokens": 4096,
+    "input_cost_10k": 0.0023,
+    "output_cost_10k": 0.004,
+    "developer": "NVIDIA",
+    "provider": "DeepInfra",
+    "pricing_page": null,
+    "pricing_plan": "Pay-as-you-go",
+    "model_info_page": {
+      "https://openrouter.ai/nvidia/llama-3.1-nemotron-70b-instruct": [
+        "request_context_window",
+        "max_output_tokens",
+        "input_cost_10k",
+        "output_cost_10k",
+        "provider"
+      ]
+    },
+
+    "updated": "2024-12-11"
   }
 ]
